@@ -1,8 +1,11 @@
-from numpy import exp, nan_to_num, inf
+from numpy import exp, log, array
+from numpy.random import random
 from scipy.optimize import newton
 
 PION_MEAN_LIFETIME = 2.6033e-8
 MUON_MEAN_LIFETIME = 2.1969811e-6
+
+T_MAX = MUON_MEAN_LIFETIME * PION_MEAN_LIFETIME * log(MUON_MEAN_LIFETIME/PION_MEAN_LIFETIME) / (MUON_MEAN_LIFETIME - PION_MEAN_LIFETIME)
 
 
 def N(t, N0):
@@ -15,20 +18,34 @@ def N(t, N0):
     
     return first_part * second_part
 
-def N_CDF(x,N0):
-    """
-    The CDF from the Equation 1 from the documentation
-    here N0 is a normalization constant
-    """
-    t1 = MUON_MEAN_LIFETIME
-    t2 = PION_MEAN_LIFETIME
+# def N_Wrapper_Distribution(ts, N0, t_end=2e-5):
+#     """
+#     Function that is always higher than Equation 1 from the documentation
+#     here N0 is a normalization constant
+#     """
+#     N_MAX = N(T_MAX, N0) + 1
+#     SLOPE = - N_MAX / (t_end - T_MAX)
 
-    first_part = N0 / (t1 - t2)
-    second_part = - (t1 * exp(x / t2) - t2 * exp(x / t1)) * exp(- x / t2 - x / t1) - t2 + t1
+#     Ns = array([N_MAX if t < T_MAX*2 else SLOPE*(t-T_MAX*2)+N_MAX for t in ts])
 
-    second_part = nan_to_num(second_part, nan=inf)
+#     return Ns
 
-    return first_part * second_part
+def Random_number_from_distribution(N0, t_end, N_MAX):
+    t_rand = random() * t_end
+    N_rand = random() * N_MAX
+
+    while N_rand > N(t_rand, N0):
+        t_rand = random() * t_end
+        N_rand = random() * N_MAX
+
+    return [t_rand, N_rand]
+
+def Random_Numbers_from_Dist(N0, t_end):
+    N_MAX = N(T_MAX, N0)
+
+    points = array([Random_number_from_distribution(N0, t_end, N_MAX) for _ in range(N0)])
+
+    return points
 
 def N_Integrated(t, N0):
     top_part = N0 * (PION_MEAN_LIFETIME * exp(-t / PION_MEAN_LIFETIME) - MUON_MEAN_LIFETIME * exp(- t / PION_MEAN_LIFETIME))
