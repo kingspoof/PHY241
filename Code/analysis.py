@@ -21,11 +21,12 @@ def binned_maximum_likelihood_fit(counts, bin_edges, initial_guess=[1, 1]):
     n = np.sum(counts)
     bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
     bin_width = bin_edges[1] - bin_edges[0]
+    bounds = [(1e-7, 1e-5), (1e-9, 1e-7)]
     
     
     global_result = dual_annealing(
         binned_maximum_likelihood,
-        bounds=[(1e-9, 1e-7), (1e-7, 1e-5)],
+        bounds=bounds,
         args=(counts, bin_centers, bin_width, n),
         maxiter=10000,
     )
@@ -74,7 +75,7 @@ def binned_maximum_likelihood_fit(counts, bin_edges, initial_guess=[1, 1]):
 def get_uncertainties(estimate, counts, bin_centers, bin_width, n, nll_min):
     muon_estimate, pion_estimate = estimate
     best_params = estimate
-    delta = 0.5
+    delta = 1.15
     
     # the uncertainties are given by the nll where it changes by the delta abount
     def nll_muon(muon_lifetime):
