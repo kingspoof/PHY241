@@ -19,6 +19,12 @@
 \newcommand\Plotwidth{0.8}
 \newcommand\Bilderwidth{0.8}
 
+
+% some stuff to make writing this report easiert
+\newcommand{\electron}{$e^{-}$}
+\newcommand{\pion}{$\pi^{-}$}
+\newcommand{\muon}{$\mu^{-}$}
+
 \begin{document}
 
 % Bitte Titlepage noch bearbeiten falls nötig
@@ -28,9 +34,54 @@
 \tableofcontents
 \mainmatter
 
-\chapter{Introduction}
+\chapter{Abstract}
+% Short summary: goal, method, main results, ... 
 
-In the beginning\cite{Test}...
+\chapter{Introduction}
+% what we want to do
+In this project, a simplified simulation of an experiment for measuring the lifetymes of charges pions (\pion) and muons (\muon) will be performed.
+
+% problem description
+\section{Motivation}
+Negatively charged pions (\pion) are composite particles, that consist of a down quark an an up antiquark. They are unstable and decay predominantly to a muon (\muon) and a muon-antineutrino ($\bar{v_{\mu}}$). The muon, a heavier partner of the electron, is also untable and decays into an electron (\electron), a muon-neutrino ($v_{\mu}$) and an electron antineutrino ($\bar{v_{e}}$). Neglecting any experimental effects, the time distribution of the \electron produced in the decay chain is given by
+
+\begin{equation}
+    N(t) = \frac{N_0}{\tau_{\mu} - \tau_{\pi}} * [\exp{-\frac{t}{\tau_{\mu}}} - \exp{-\frac{t}{\tau_{\pi}}}]
+    \label{eq:decay_chain_equation}
+\end{equation}
+
+where $\tau_{\mu}$ and $\tau_{\pi}$ are the mean lifetymes of the \muon and \pion respectively. A measurement of this time distribution allows to extract times for $\tau_{\mu}$ and $\tau_{\pi}$.
+
+\section{Setup}
+
+The basic elements of the corresponding real experiment are shown in Fig. A negatively charged pion (\pion) is stopped in the third scintillator. The emitted electron (\electron) is then detected in the fifth scintillator. The time difference between the moment the \pion is stopped in the third scintillator and the \electron is detected in the fifth scintillator is recorded. A spectrum of time differences for many such events will allow for an estimation of the half life times of the \pion ($\tau_{\pi}$) and the \muon ($\tau_{\mu}$).
+
+\begin{figure}[htb]
+\begin{center}
+\includegraphics[scale=0.25]{images/experimental_setup.png}
+\end{center}
+\caption{Simplified sketch of the setup of the experiment (from the project documentation). A beam containing \pion passes through scintillators 1 and 2 and a piece of plastic to slow them down, such that they stop in scintillator 3. Scintillator 4 is a counter to reject events in which the beam particle was not stopped in schintillator 3. Electron \electron created in the decay chain are detected in schintilator 5. The signal from schintillator 3 starts a clock, the signal from scintillator 5 stops it.}
+\label{fig:experimental_setup}
+\end{figure}
+
+% goal of the simulation
+% short theoretical background
+
+\chapter{Methods}
+\section{Simple simulation}
+% d\tau_{\pi}ription of the simulation model
+% assumptions made
+% algorithms or numerical methods used
+% software / tools used
+
+\chapter{Results}
+% present key results (plots, tables, values)
+% explain findings objectively, without interpretation
+
+\chapter{Discussion}
+% interpretation of the results
+% compare with theory or expectations
+% sources of error, limitations by the simulation
 
 \include{Setup/Verzeichnisse_eigen}
 
