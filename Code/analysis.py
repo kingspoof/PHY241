@@ -1,7 +1,11 @@
 import numpy as np
-from scipy.optimize import minimize, dual_annealing
+from scipy.optimize import minimize, dual_annealing, newton
 from config import *
 from scipy.special import gammaln
+import matplotlib.pyplot as plt
+
+
+from mcmc import markov_chain_monte_carlo
 
 # Perform a binned maximum likelihood fit to the histogram to extract estimates ˆτπ and ˆτμ for 
 # the two mean lifetimes, as well as uncertainties on your two estimates. Compare the results 
@@ -19,50 +23,81 @@ def binned_maximum_likelihood_fit(counts, bin_edges, initial_guess=[1, 1]):
     bin_width = bin_edges[1] - bin_edges[0]
     
     
-    print(binned_maximum_likelihood([MUON_MEAN_LIFETIME, PION_MEAN_LIFETIME], counts, bin_centers, bin_width, n))
-    
-    #result = minimize(
-    #    binned_maximum_likelihood,
-    #    x0=initial_guess,
-    #    args=(counts, bin_centers, bin_width, n),
-    #    method='L-BFGS-B',
-    #    bounds=[(1e-9, 1e-7), (1e-7, 1e-5)]
-    #)
-    
-    result = dual_annealing(
+    global_result = dual_annealing(
         binned_maximum_likelihood,
         bounds=[(1e-9, 1e-7), (1e-7, 1e-5)],
         args=(counts, bin_centers, bin_width, n),
         maxiter=10000,
     )
+
+    # use a finer grid around the global minimum to get a better estimate of the parameters
+    local_range = 0.01
+    bounds = [
+        ((1 - local_range) * global_result.x[0], (1 + local_range) * global_result.x[0]),
+        ((1 - local_range) * global_result.x[1], (1 + local_range) * global_result.x[1])
+    ]
     
-    next_parameters = result.x
-    result = minimize(
+    local_result = minimize(
         binned_maximum_likelihood,
-        next_parameters,
-        method='L-BFGS-B',
-        bounds=[(1e-9, 1e-7), (1e-7, 1e-5)],
+        x0=global_result.x,
         args=(counts, bin_centers, bin_width, n),
+        method='trust-constr',
+        bounds=bounds,
+        options={'gtol': 1e-10, 'xtol': 1e-10}
     )
     
-    # Assuming 'result' contains the optimization result
-    best_fit_values = result.x
-    hess_inv = result.hess_inv  # Inverse Hessian
-
-    # Since it's a 'LbfgsInvHessProduct', convert it to a matrix (if needed) and estimate uncertainties
-    uncertainties = np.sqrt(np.diag(hess_inv.todense()))  # If it's sparse, convert to dense matrix first
-
-    # Print the values with their respective uncertainties
-    for i, (value, uncertainty) in enumerate(zip(best_fit_values, uncertainties)):
-        print(f"Parameter {i+1}: {value:.4e} ± {uncertainty:.4e}")
-
-
-    return result
-
+    # lastly find the absolute best minimum using markov chain monte carlo
+    min_params, min_nll, _ = markov_chain_monte_carlo(
+        binned_maximum_likelihood,
+        local_result.x,
+        data=(counts, bin_centers, bin_width, n),
+        covariance_matrix=np.diag([1, 1]),
+        max_iterations=100000,
+        step_multiplier=1e-10
+    )
     
-    #eturn muon_mean_lifetime, pion_mean_lifetime, muon_mean_lifetime_uncertainty, pion_mean_lifetime_uncertainty
+    muon_estimate, pion_estimate = min_params
+    muon_uncertainty, pion_uncertainty = get_uncertainties(
+        min_params,
+        counts,
+        bin_centers,
+        bin_width,
+        n,
+        min_nll
+    )
+    
+    return muon_estimate, pion_estimate, muon_uncertainty, pion_uncertainty
 
-
+def get_uncertainties(estimate, counts, bin_centers, bin_width, n, nll_min):
+    muon_estimate, pion_estimate = estimate
+    best_params = estimate
+    delta = 1.15
+    
+    # the uncertainties are given by the nll where it changes by the delta abount
+    def nll_muon(muon_lifetime):
+        return binned_maximum_likelihood(
+            (muon_lifetime, best_params[1]),
+            counts,
+            bin_centers,
+            bin_width,
+            n
+        ) - nll_min - delta
+    
+    def nll_pion(pion_lifetime):
+        return binned_maximum_likelihood(
+            (best_params[0], pion_lifetime),
+            counts,
+            bin_centers,
+            bin_width,
+            n
+        ) - nll_min - delta
+    
+    # now we can use newtons method to find the roots of the nll functions
+    muon_uncertainty = newton(nll_muon, muon_estimate * 1.2, maxiter=1000)
+    pion_uncertainty = newton(nll_pion, pion_estimate * 1.2, maxiter=1000)
+    
+    return muon_uncertainty, pion_uncertainty
+    
 def binned_maximum_likelihood(params, counts, bin_centers, bin_width, total_counts):
 
     muon_mean_lifetime, pion_mean_lifetime = params
@@ -97,6 +132,6 @@ def negative_log_likelihood(counts, estimated_counts):
     Calculates the negative log-likelihood between the actual counts and the estimated counts.
     """
     
-    nll = - np.sum(counts * np.log(estimated_counts) - estimated_counts - gammaln(sum(counts)))
+    nll = - np.sum(counts * np.log(estimated_counts) - estimated_counts - gammaln(counts + 1))
     return nll
 
