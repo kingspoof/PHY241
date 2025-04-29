@@ -52,7 +52,7 @@ def binned_maximum_likelihood_fit(counts, bin_edges, initial_guess=[1, 1]):
         local_result.x,
         data=(counts, bin_centers, bin_width, n),
         covariance_matrix=np.diag([1, 1]),
-        max_iterations=100000,
+        max_iterations=1000,
         step_multiplier=1e-10
     )
     
@@ -66,12 +66,15 @@ def binned_maximum_likelihood_fit(counts, bin_edges, initial_guess=[1, 1]):
         min_nll
     )
     
-    return muon_estimate, pion_estimate, muon_uncertainty, pion_uncertainty
+    muon_pull = pull(muon_estimate, MUON_MEAN_LIFETIME, muon_uncertainty)
+    pion_pull = pull(pion_estimate, PION_MEAN_LIFETIME, pion_uncertainty)
+    
+    return muon_estimate, muon_uncertainty, muon_pull, pion_estimate, pion_uncertainty, pion_pull
 
 def get_uncertainties(estimate, counts, bin_centers, bin_width, n, nll_min):
     muon_estimate, pion_estimate = estimate
     best_params = estimate
-    delta = 1.15
+    delta = 0.5
     
     # the uncertainties are given by the nll where it changes by the delta abount
     def nll_muon(muon_lifetime):
@@ -135,3 +138,9 @@ def negative_log_likelihood(counts, estimated_counts):
     nll = - np.sum(counts * np.log(estimated_counts) - estimated_counts - gammaln(counts + 1))
     return nll
 
+def pull(reconstructed_quantity, generated_quantity, uncertainty_on_reconstructed_quantity):
+    """
+    Calculate the pull of a reconstructed quantity.
+    """
+    
+    return (reconstructed_quantity - generated_quantity) / uncertainty_on_reconstructed_quantity
