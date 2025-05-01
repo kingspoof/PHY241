@@ -25,7 +25,7 @@ def binned_maximum_likelihood_fit(counts, bin_edges, initial_guess=[1, 1]):
     
     global_result = dual_annealing(
         binned_maximum_likelihood,
-        bounds=[(1e-9, 1e-7), (1e-7, 1e-5)],
+        bounds=[(1e-7, 1e-5), (1e-9, 1e-7)], #bounds=[(1e-9, 1e-7), (1e-7, 1e-5)] die sind falsch rum 
         args=(counts, bin_centers, bin_width, n),
         maxiter=10000,
     )
@@ -123,7 +123,7 @@ def estimate_lifetime_counts(bin_centers, bin_width, total_counts, muon_mean_lif
     """
 
     estimated_counts = N(bin_centers, total_counts, muon_mean_lifetime, pion_mean_lifetime) * bin_width
-    estimated_counts = np.clip(estimated_counts, 1e-15, None) 
+    # estimated_counts = np.clip(estimated_counts, 1e-15, None) 
     
     return estimated_counts
 
@@ -132,6 +132,8 @@ def negative_log_likelihood(counts, estimated_counts):
     Calculates the negative log-likelihood between the actual counts and the estimated counts.
     """
     
-    nll = - np.sum(counts * np.log(estimated_counts) - estimated_counts - gammaln(counts + 1))
+    # nll = - np.sum(counts * np.log(estimated_counts) - estimated_counts - gammaln(counts + 1))
+    nll = - np.sum(counts * np.log(estimated_counts))
+    
     return nll
 

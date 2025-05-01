@@ -2,7 +2,7 @@ from numpy import exp
 from scipy.optimize import bisect
 
 PION_MEAN_LIFETIME = 2.6033e-8
-MUON_MEAN_LIFETIME = 2.2e-6
+MUON_MEAN_LIFETIME = 2.1969811e-6
 
 def N(t, N0, muon_mean_lifetime=MUON_MEAN_LIFETIME, pion_mean_lifetime=PION_MEAN_LIFETIME):
     """
