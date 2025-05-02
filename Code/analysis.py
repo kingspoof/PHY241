@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.optimize import minimize, dual_annealing, newton
+from scipy.optimize import minimize, dual_annealing, newton, curve_fit
 from config import *
 from scipy.special import gammaln
 import matplotlib.pyplot as plt
@@ -11,6 +11,22 @@ from mcmc import markov_chain_monte_carlo
 # the two mean lifetimes, as well as uncertainties on your two estimates. Compare the results 
 # with the values that you put into the simulation
 
+def binned_least_squares_fit(counts, bin_edges, initial_guess):
+
+    n = np.sum(counts)
+    bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+    bin_width = bin_edges[1] - bin_edges[0]
+
+    def N_wrapper(bin_centers, muon_mean_lifetime, pion_mean_lifetime):
+        counts = estimate_lifetime_counts(bin_centers, bin_width, n, muon_mean_lifetime, pion_mean_lifetime)
+        return counts
+    
+    popt, pcov = curve_fit(N_wrapper, bin_centers, counts, p0=initial_guess)
+
+    MUON_estimate_squares, PION_estimate_squares = popt
+    MUON_uncer_squares, PION_uncer_squares = np.sqrt(np.diag(pcov))
+
+    return MUON_estimate_squares, PION_estimate_squares, MUON_uncer_squares, PION_uncer_squares
 
 def binned_maximum_likelihood_fit(counts, bin_edges, initial_guess=[1, 1]):
     """
