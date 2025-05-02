@@ -11,7 +11,7 @@ from mcmc import markov_chain_monte_carlo
 # the two mean lifetimes, as well as uncertainties on your two estimates. Compare the results 
 # with the values that you put into the simulation
 
-def binned_least_squares_fit(counts, bin_edges, initial_guess):
+def binned_least_squares_fit(counts, bin_edges, initial_guess, bounds=(-np.inf, np.inf)):
 
     n = np.sum(counts)
     bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
@@ -21,7 +21,7 @@ def binned_least_squares_fit(counts, bin_edges, initial_guess):
         counts = estimate_lifetime_counts(bin_centers, bin_width, n, muon_mean_lifetime, pion_mean_lifetime)
         return counts
     
-    popt, pcov = curve_fit(N_wrapper, bin_centers, counts, p0=initial_guess)
+    popt, pcov = curve_fit(N_wrapper, bin_centers, counts, p0=initial_guess, bounds=bounds)
 
     MUON_estimate_squares, PION_estimate_squares = popt
     MUON_uncer_squares, PION_uncer_squares = np.sqrt(np.diag(pcov))
@@ -131,7 +131,6 @@ def binned_maximum_likelihood(params, counts, bin_centers, bin_width, total_coun
     nll = negative_log_likelihood(counts, estimated_lifetime_counts)
 
     return nll
-
 
 def estimate_lifetime_counts(bin_centers, bin_width, total_counts, muon_mean_lifetime, pion_mean_lifetime):
     """
