@@ -28,6 +28,18 @@ def binned_least_squares_fit(counts, bin_edges, initial_guess, bounds=(-np.inf, 
 
     return MUON_estimate_squares, PION_estimate_squares, MUON_uncer_squares, PION_uncer_squares
 
+def binned_maximum_likelihood_fit_2(counts, bin_edges, initial_guess):
+
+    n = np.sum(counts)
+    bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+    bin_width = bin_edges[1] - bin_edges[0]
+
+    MUON_estimate_like, PION_estimate_like = minimize(binned_maximum_likelihood, [2e-8, 2e-6], args=(counts, bin_centers, bin_width, n)).x
+
+    MUON_uncer_like, PION_uncer_like = 0, 0
+
+    return MUON_estimate_like, PION_estimate_like, MUON_uncer_like, PION_uncer_like
+
 def binned_maximum_likelihood_fit(counts, bin_edges, initial_guess=[1, 1]):
     """
     Perform a binned maximum likelihood fit to the histogram to extract estimates for the mean lifetimes.
