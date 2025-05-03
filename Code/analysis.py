@@ -164,3 +164,6 @@ def negative_log_likelihood(counts, estimated_counts):
     
     return nll
 
+def pull(reconstructed_quantity, generated_quantity, uncertainty):
+    pull = (reconstructed_quantity - generated_quantity) / uncertainty
+    return pull
