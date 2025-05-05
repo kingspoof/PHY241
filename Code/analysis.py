@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.optimize import minimize, dual_annealing, newton
+from scipy.optimize import minimize, dual_annealing, newton, curve_fit
 from config import *
 from scipy.special import gammaln
 import matplotlib.pyplot as plt
@@ -11,6 +11,34 @@ from mcmc import markov_chain_monte_carlo
 # the two mean lifetimes, as well as uncertainties on your two estimates. Compare the results 
 # with the values that you put into the simulation
 
+def binned_least_squares_fit(counts, bin_edges, initial_guess, bounds=(-np.inf, np.inf)):
+
+    n = np.sum(counts)
+    bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+    bin_width = bin_edges[1] - bin_edges[0]
+
+    def N_wrapper(bin_centers, muon_mean_lifetime, pion_mean_lifetime):
+        counts = estimate_lifetime_counts(bin_centers, bin_width, n, muon_mean_lifetime, pion_mean_lifetime)
+        return counts
+    
+    popt, pcov = curve_fit(N_wrapper, bin_centers, counts, p0=initial_guess, bounds=bounds)
+
+    MUON_estimate_squares, PION_estimate_squares = popt
+    MUON_uncer_squares, PION_uncer_squares = np.sqrt(np.diag(pcov))
+
+    return MUON_estimate_squares, PION_estimate_squares, MUON_uncer_squares, PION_uncer_squares
+
+def binned_maximum_likelihood_fit_2(counts, bin_edges, initial_guess):
+
+    n = np.sum(counts)
+    bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
+    bin_width = bin_edges[1] - bin_edges[0]
+
+    MUON_estimate_like, PION_estimate_like = minimize(binned_maximum_likelihood, [2e-8, 2e-6], args=(counts, bin_centers, bin_width, n)).x
+
+    MUON_uncer_like, PION_uncer_like = 0, 0
+
+    return MUON_estimate_like, PION_estimate_like, MUON_uncer_like, PION_uncer_like
 
 def binned_maximum_likelihood_fit(counts, bin_edges, initial_guess=[1, 1]):
     """
@@ -26,7 +54,7 @@ def binned_maximum_likelihood_fit(counts, bin_edges, initial_guess=[1, 1]):
     
     global_result = dual_annealing(
         binned_maximum_likelihood,
-        bounds=bounds,
+        bounds=[(1e-7, 1e-5), (1e-9, 1e-7)], #bounds=[(1e-9, 1e-7), (1e-7, 1e-5)] die sind falsch rum 
         args=(counts, bin_centers, bin_width, n),
         maxiter=10000,
     )
@@ -157,14 +185,13 @@ def binned_maximum_likelihood(params, counts, bin_centers, bin_width, total_coun
 
     return nll
 
-
 def estimate_lifetime_counts(bin_centers, bin_width, total_counts, muon_mean_lifetime, pion_mean_lifetime):
     """
     Estimate the expected counts in each bin based on the mean lifetimes.
     """
 
     estimated_counts = N(bin_centers, total_counts, muon_mean_lifetime, pion_mean_lifetime) * bin_width
-    estimated_counts = np.clip(estimated_counts, 1e-15, None) 
+    # estimated_counts = np.clip(estimated_counts, 1e-15, None) 
     
     return estimated_counts
 
@@ -173,12 +200,11 @@ def negative_log_likelihood(counts, estimated_counts):
     Calculates the negative log-likelihood between the actual counts and the estimated counts.
     """
     
-    nll = - np.sum(counts * np.log(estimated_counts) - estimated_counts - gammaln(counts + 1))
+    # nll = - np.sum(counts * np.log(estimated_counts) - estimated_counts - gammaln(counts + 1))
+    nll = - np.sum(counts * np.log(estimated_counts))
+    
     return nll
 
-def pull(reconstructed_quantity, generated_quantity, uncertainty_on_reconstructed_quantity):
-    """
-    Calculate the pull of a reconstructed quantity.
-    """
-    
-    return (reconstructed_quantity - generated_quantity) / uncertainty_on_reconstructed_quantity
+def pull(reconstructed_quantity, generated_quantity, uncertainty):
+    pull = (reconstructed_quantity - generated_quantity) / uncertainty
+    return pull
