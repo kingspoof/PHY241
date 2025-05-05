@@ -67,6 +67,13 @@ def binned_maximum_likelihood_fit(counts, bin_edges, initial_guess=[1, 1]):
         min_nll
     )
     
+    print(get_uncertainties_2d(min_params,
+        counts,
+        bin_centers,
+        bin_width,
+        n,
+        min_nll))
+    
     muon_pull = pull(muon_estimate, MUON_MEAN_LIFETIME, muon_uncertainty)
     pion_pull = pull(pion_estimate, PION_MEAN_LIFETIME, pion_uncertainty)
     
@@ -75,7 +82,7 @@ def binned_maximum_likelihood_fit(counts, bin_edges, initial_guess=[1, 1]):
 def get_uncertainties(estimate, counts, bin_centers, bin_width, n, nll_min):
     muon_estimate, pion_estimate = estimate
     best_params = estimate
-    delta = 1.15
+    delta = 0.5
     
     # the uncertainties are given by the nll where it changes by the delta abount
     def nll_muon(muon_lifetime):
@@ -100,6 +107,36 @@ def get_uncertainties(estimate, counts, bin_centers, bin_width, n, nll_min):
     muon_uncertainty = newton(nll_muon, muon_estimate * 1.2, maxiter=1000)
     pion_uncertainty = newton(nll_pion, pion_estimate * 1.2, maxiter=1000)
     
+    return muon_uncertainty, pion_uncertainty
+
+
+def get_uncertainties_2d(estimate, counts, bin_centers, bin_width, n, nll_min):
+    delta = 0.5  # 1-sigma for 2D likelihood
+
+    def nll(params):
+        return binned_maximum_likelihood(params, counts, bin_centers, bin_width, n)
+
+    # grid search around best estimate to find contour where NLL = nll_min + delta
+    n_points = 2500
+    muon_vals = np.linspace(estimate[0] * 0.8, estimate[0] * 1.2, n_points)
+    pion_vals = np.linspace(estimate[1] * 0.8, estimate[1] * 1.2, n_points)
+    
+    contour_points = []
+
+    for mu in muon_vals:
+        for pi in pion_vals:
+            params = (mu, pi)
+            current_nll = nll(params)
+            if abs(current_nll - nll_min - delta) < 0.05:  # rough threshold
+                contour_points.append(params)
+
+    contour_points = np.array(contour_points)
+    if contour_points.size == 0:
+        raise RuntimeError("No valid points found on the ΔNLL=0.5 contour.")
+
+    muon_uncertainty = np.ptp(contour_points[:, 0]) / 2
+    pion_uncertainty = np.ptp(contour_points[:, 1]) / 2
+
     return muon_uncertainty, pion_uncertainty
     
 def binned_maximum_likelihood(params, counts, bin_centers, bin_width, total_counts):
