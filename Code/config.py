@@ -1,5 +1,4 @@
 from numpy import exp
-from scipy.optimize import bisect
 
 PION_MEAN_LIFETIME = 2.6033e-8
 MUON_MEAN_LIFETIME = 2.1969811e-6

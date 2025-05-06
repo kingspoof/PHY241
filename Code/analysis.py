@@ -34,21 +34,35 @@ def binned_maximum_likelihood_fit_2(counts, bin_edges, initial_guess):
     bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
     bin_width = bin_edges[1] - bin_edges[0]
 
-    MUON_estimate_like, PION_estimate_like = minimize(binned_maximum_likelihood, [2e-8, 2e-6], args=(counts, bin_centers, bin_width, n)).x
+    minimization_result = minimize(
+        binned_maximum_likelihood,
+        x0=[2e-6, 2e-8],
+        args=(counts, bin_centers, bin_width, n),
+        #bounds=[(1e-6, 5e-6), (1e-8, 5e-8)],
+        #method='L-BFGS-B',
+        )
+    
+    MUON_estimate_like, PION_estimate_like = minimization_result.x
+    
+    # Calculate the uncertainties using the covariance matrix
+    #covariance_matrix = np.linalg.inv(minimization_result.hess_inv.todense())
+    covariance_matrix = np.sqrt(np.diag(minimization_result.hess_inv * 0.5))
 
-    MUON_uncer_like, PION_uncer_like = 0, 0
+    MUON_uncer_like, PION_uncer_like = covariance_matrix
 
     return MUON_estimate_like, PION_estimate_like, MUON_uncer_like, PION_uncer_like
 
+"""
 def binned_maximum_likelihood_fit(counts, bin_edges, initial_guess=[1, 1]):
     """
-    Perform a binned maximum likelihood fit to the histogram to extract estimates for the mean lifetimes.
-    """
+    #Perform a binned maximum likelihood fit to the histogram to extract estimates for the mean lifetimes.
+"""
 
     # compute the bin centers and bin widths to do the minimization faster
     n = np.sum(counts)
     bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
     bin_width = bin_edges[1] - bin_edges[0]
+    bounds = [(1e-7, 1e-5), (1e-9, 1e-7)]
     
     
     global_result = dual_annealing(
@@ -80,7 +94,7 @@ def binned_maximum_likelihood_fit(counts, bin_edges, initial_guess=[1, 1]):
         local_result.x,
         data=(counts, bin_centers, bin_width, n),
         covariance_matrix=np.diag([1, 1]),
-        max_iterations=100000,
+        max_iterations=1000,
         step_multiplier=1e-10
     )
     
@@ -94,12 +108,22 @@ def binned_maximum_likelihood_fit(counts, bin_edges, initial_guess=[1, 1]):
         min_nll
     )
     
-    return muon_estimate, pion_estimate, muon_uncertainty, pion_uncertainty
+    print(get_uncertainties_2d(min_params,
+        counts,
+        bin_centers,
+        bin_width,
+        n,
+        min_nll))
+    
+    muon_pull = pull(muon_estimate, MUON_MEAN_LIFETIME, muon_uncertainty)
+    pion_pull = pull(pion_estimate, PION_MEAN_LIFETIME, pion_uncertainty)
+    
+    return muon_estimate, muon_uncertainty, muon_pull, pion_estimate, pion_uncertainty, pion_pull
 
 def get_uncertainties(estimate, counts, bin_centers, bin_width, n, nll_min):
     muon_estimate, pion_estimate = estimate
     best_params = estimate
-    delta = 1.15
+    delta = 0.5
     
     # the uncertainties are given by the nll where it changes by the delta abount
     def nll_muon(muon_lifetime):
@@ -125,7 +149,38 @@ def get_uncertainties(estimate, counts, bin_centers, bin_width, n, nll_min):
     pion_uncertainty = newton(nll_pion, pion_estimate * 1.2, maxiter=1000)
     
     return muon_uncertainty, pion_uncertainty
+
+def get_uncertainties_2d(estimate, counts, bin_centers, bin_width, n, nll_min):
+    delta = 0.5  # 1-sigma for 2D likelihood
+
+    def nll(params):
+        return binned_maximum_likelihood(params, counts, bin_centers, bin_width, n)
+
+    # grid search around best estimate to find contour where NLL = nll_min + delta
+    n_points = 2500
+    muon_vals = np.linspace(estimate[0] * 0.8, estimate[0] * 1.2, n_points)
+    pion_vals = np.linspace(estimate[1] * 0.8, estimate[1] * 1.2, n_points)
     
+    contour_points = []
+
+    for mu in muon_vals:
+        for pi in pion_vals:
+            params = (mu, pi)
+            current_nll = nll(params)
+            if abs(current_nll - nll_min - delta) < 0.05:  # rough threshold
+                contour_points.append(params)
+
+    contour_points = np.array(contour_points)
+    if contour_points.size == 0:
+        raise RuntimeError("No valid points found on the ΔNLL=0.5 contour.")
+
+    muon_uncertainty = np.ptp(contour_points[:, 0]) / 2
+    pion_uncertainty = np.ptp(contour_points[:, 1]) / 2
+
+    return muon_uncertainty, pion_uncertainty
+    
+"""
+
 def binned_maximum_likelihood(params, counts, bin_centers, bin_width, total_counts):
 
     muon_mean_lifetime, pion_mean_lifetime = params
