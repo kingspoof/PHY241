@@ -8,16 +8,28 @@
 \usepackage{Setup/settings}
 
 % Einstellungen für Metainformation in PDF-Datei
-\hypersetup{pdftitle={Praktikum Physik 1 Experiment},
-            pdfauthor={Till Böhringer}}
+\hypersetup{pdftitle={ESC241 Pion and Muon lifetime},
+            pdfauthor={Till Böhringer, Lucien Käser, Marc Urech, Richard Salnikov}}
 
 % Was im Footer stehen soll, ifoot -> links, cfoot -> mitte
-\ifoot{Experiment Shortname}
-\cfoot{HS23}
+\ifoot{Pion and muon lifetimes}
+\cfoot{ESC241}
 
 % Allgemeine weite um alle Figures darauf zu beziehen
 \newcommand\Plotwidth{0.8}
 \newcommand\Bilderwidth{0.8}
+
+% Setup wie siunix zahlen schreibt
+\sisetup{group-separator = {'}, group-digits = integer}
+
+% some stuff to make writing this report easiert
+\newcommand{\electron}{$e^{-}$}
+\newcommand{\pion}{$\pi^{-}$}
+\newcommand{\muon}{$\mu^{-}$}
+
+\lstset{language=python,
+       basicstyle=\footnotesize\ttfamily,
+  }
 
 \begin{document}
 
@@ -28,9 +40,87 @@
 \tableofcontents
 \mainmatter
 
-\chapter{Introduction}
+\chapter{Abstract}
+% Short summary: goal, method, main results, ... 
 
-In the beginning\cite{Test}...
+\chapter{Introduction}
+% what we want to do
+In this project, a simplified simulation of an experiment for measuring the lifetimes of charges pions (\pion) and muons (\muon) will be performed.
+
+% problem description
+\section{Motivation}
+Negatively charged pions (\pion) are composite particles, that consist of a down quark and an up antiquark. They are unstable and decay predominantly to a muon (\muon) and a muon-antineutrino ($\bar{v_{\mu}}$). The muon, a heavier partner of the electron, is also unstable and decays into an electron (\electron), a muon-neutrino ($v_{\mu}$) and an electron antineutrino ($\bar{v_{e}}$). Neglecting any experimental effects, the time distribution of the \electron produced in the decay chain is given by
+
+\begin{equation}
+    N(t) = \frac{N_0}{\tau_{\mu} - \tau_{\pi}}  \left[ \exp{-\frac{t}{\tau_{\mu}}} - \exp{-\frac{t}{\tau_{\pi}}} \right]
+    \label{eq:decay_chain_equation}
+\end{equation}
+
+Where $\tau_{\mu}$ and $\tau_{\pi}$ are the mean lifetimes of the \muon and \pion respectively. A measurement of this time distribution allows extracting times for $\tau_{\mu}$ and $\tau_{\pi}$.
+
+\section{Setup}
+
+The basic elements of the corresponding real experiment are shown in Figure \ref{fig:experimental_setup} negatively charged pion (\pion) is stopped in the third scintillator. The emitted electron (\electron) is then detected in the fifth scintillator. The time difference between the moment the \pion is stopped in the third scintillator and the \electron is detected in the fifth scintillator is recorded. A spectrum of time differences for many such events will allow for an estimation of the half life times of the \pion ($\tau_{\pi}$) and the \muon ($\tau_{\mu}$).
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[width=0.7\textwidth]{images/experimental_setup.png}
+\end{center}
+\caption{Simplified sketch of the setup of the experiment (from the project documentation). A beam containing \pion passes through scintillators 1 and 2 and a piece of plastic to slow them down, such that they stop in scintillator 3. Scintillator 4 is a counter to reject events in which the beam particle was not stopped in scintillator 3. Electron \electron created in the decay chain are detected in scintillator 5. The signal from scintillator 3 starts a clock, the signal from scintillator 5 stops it.}
+\label{fig:experimental_setup}
+\end{figure}
+
+% goal of the simulation
+% short theoretical background
+
+\FloatBarrier
+\chapter{Methods}
+
+In this Chapter we go over the simulations we have done, at first a simple simulation and second a more realistic example.
+
+\section{Simple simulation}
+% d\tau_{\pi}ription of the simulation model
+% assumptions made
+% algorithms or numerical methods used
+% software / tools used
+
+For the simple simulation we simulated \num{10000} decays according to equation \ref{eq:decay_chain_equation} and known values from the Particle Data Group. \cite{ParticleDataGroup:2024cfk}
+
+\pion Mean lifetime: \qty{2.6033(0.0005)e-8}{\s} \\
+\muon Mean lifetime: \qty{2.1969811(0.0000022)e-6}{\s}
+
+For the random sampling we generate random point from a constant distribution with width from \qty{0}{\s} to \qty{2e-5}{\s} and a height from 0 to the maximum counts of the distribution we want to sample from. We check if this point is in the desired distribution, if not, we generate a new random point, if it is in there, we return it. This we do until we have reached the desired amount of points in the distribution.
+
+After we got all points generated, we draw a histogram, figure \ref{fig:histogram}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\Plotwidth\textwidth]{images/simulated_decay_histogram.pdf}
+    \caption{The histogram generated from random sampling the given distribution}
+    \label{fig:histogram}
+\end{figure}
+
+Next we fitted back on the generated histogram the distribution, getting values for the lifetimes and corresponding uncertainties. The fitting was supposed to be done via a maximum likelihood fit, but as can be seen in figure \ref{fig:comparison_estimators}, the least squares method gives better results than the maximum likelihood fit. In figure \ref{fig:comparison_estimators} the maximum likelihood fit is implemented with the SciPy \lstinline|minimize| function, the least squares fit is done with the SciPy \lstinline|curve_fit| function and the full is a stack of fitters from \lstinline|dual_annealing| over a local \lstinline|minimize| to a custom markov-chain minimizer.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\Plotwidth\textwidth]{images/comparison_estimators.pdf}
+    \caption{Comparison between different estimators and the base distribution, overlaid on the histogram.}
+    \label{fig:comparison_estimators}
+\end{figure}
+
+As can be seen in figure \ref{fig:comparison_estimators} the best representation to the base distribution gives the least squares fit, which we will use for the further exercises.
+
+
+
+\chapter{Results}
+% present key results (plots, tables, values)
+% explain findings objectively, without interpretation
+
+\chapter{Discussion}
+% interpretation of the results
+% compare with theory or expectations
+% sources of error, limitations by the simulation
 
 \include{Setup/Verzeichnisse_eigen}
 

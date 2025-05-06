@@ -1,0 +1,339 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     12721,        331]
+NotebookOptionsPosition[     11609,        304]
+NotebookOutlinePosition[     12009,        320]
+CellTagsIndexPosition[     11966,        317]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"n", "[", "x_", "]"}], " ", ":=", " ", 
+  RowBox[{
+   RowBox[{"N0", "/", 
+    RowBox[{"(", 
+     RowBox[{"tmu", " ", "-", " ", "tpi"}], ")"}]}], "*", " ", 
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"Exp", "[", 
+      RowBox[{
+       RowBox[{"-", "x"}], "/", "tmu"}], "]"}], " ", "-", " ", 
+     RowBox[{"Exp", "[", 
+      RowBox[{
+       RowBox[{"-", "x"}], "/", "tpi"}], "]"}]}], ")"}]}]}]], "Code",
+ CellChangeTimes->{{3.953708974860813*^9, 3.953709033895795*^9}, {
+   3.953709083275093*^9, 3.953709107080666*^9}, {3.9537093202335377`*^9, 
+   3.953709320317766*^9}, {3.953709359261503*^9, 3.9537093611258183`*^9}, {
+   3.953709394115106*^9, 3.953709395583891*^9}, {3.953709443273156*^9, 
+   3.953709461562888*^9}, 3.953709497514708*^9, {3.953709589614563*^9, 
+   3.953709621796834*^9}, {3.953709856430567*^9, 3.953709931526761*^9}, {
+   3.953711255044664*^9, 3.953711272952889*^9}, {3.953711313375931*^9, 
+   3.953711314660461*^9}},
+ CellLabel->"In[2]:=",ExpressionUUID->"330a4269-3ef8-45d6-b630-564f6252a25f"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"n", "[", "t", "]"}]], "Input",
+ CellChangeTimes->{{3.953709277584584*^9, 3.953709326174361*^9}, {
+  3.953709483766983*^9, 3.953709485449485*^9}, {3.953709625534381*^9, 
+  3.953709625586606*^9}},
+ CellLabel->"In[3]:=",ExpressionUUID->"cfc0b46e-9957-4c85-9bdb-74872076b5af"],
+
+Cell[BoxData[
+ FractionBox[
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{
+     SuperscriptBox["\[ExponentialE]", 
+      RowBox[{"-", 
+       FractionBox["t", "tmu"]}]], "-", 
+     SuperscriptBox["\[ExponentialE]", 
+      RowBox[{"-", 
+       FractionBox["t", "tpi"]}]]}], ")"}], " ", "N0"}], 
+  RowBox[{"tmu", "-", "tpi"}]]], "Output",
+ CellChangeTimes->{{3.953709328714046*^9, 3.9537093378739367`*^9}, {
+   3.9537094760322227`*^9, 3.9537094859860573`*^9}, 3.953709530435793*^9, 
+   3.953709625971834*^9, 3.953709940622786*^9, 3.953711318316348*^9, 
+   3.953711350872932*^9},
+ CellLabel->"Out[3]=",ExpressionUUID->"88335723-7f14-4957-8942-c33bfccd3508"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ncdf", "[", "x_", "]"}], ":=", 
+  RowBox[{"Integrate", "[", 
+   RowBox[{
+    RowBox[{"n", "[", "t", "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"t", ",", "0", ",", "x"}], "}"}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"ncdf", "[", "x", "]"}]}], "Input",
+ CellChangeTimes->{{3.95370963609383*^9, 3.953709666749341*^9}, {
+  3.9537097036946077`*^9, 3.953709703981791*^9}, {3.953709960120277*^9, 
+  3.953709976800812*^9}, {3.95371135585604*^9, 3.953711361069414*^9}},
+ CellLabel->"In[7]:=",ExpressionUUID->"9aadecab-1901-471f-97df-8259b8d51d3c"],
+
+Cell[BoxData[
+ FractionBox[
+  RowBox[{"N0", " ", 
+   RowBox[{"(", 
+    RowBox[{"tmu", "-", 
+     RowBox[{
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{"-", 
+        FractionBox["x", "tmu"]}]], " ", "tmu"}], "+", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"-", "1"}], "+", 
+        SuperscriptBox["\[ExponentialE]", 
+         RowBox[{"-", 
+          FractionBox["x", "tpi"]}]]}], ")"}], " ", "tpi"}]}], ")"}]}], 
+  RowBox[{"tmu", "-", "tpi"}]]], "Output",
+ CellChangeTimes->{3.953711361891601*^9},
+ CellLabel->"Out[8]=",ExpressionUUID->"81b312ea-1b2c-40ca-8c61-fd8c16e3fe4a"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Solve", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"n", "'"}], "[", "x", "]"}], "==", "0"}], ",", " ", "Reals"}], 
+  "]"}]], "Input",
+ CellChangeTimes->{{3.953711434229138*^9, 3.9537114695050592`*^9}, {
+  3.953711500973433*^9, 3.9537115325548887`*^9}, {3.953711573283353*^9, 
+  3.953711608113029*^9}, {3.953711681015318*^9, 3.9537116832338943`*^9}, {
+  3.953711720776379*^9, 3.953711808143515*^9}, {3.953711841475993*^9, 
+  3.953711905237741*^9}, {3.9537119603824873`*^9, 3.953711961373575*^9}},
+ CellLabel->"In[18]:=",ExpressionUUID->"7d806175-0f02-4cbc-b1b7-075de99f885f"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"N0", "\[Rule]", 
+     TemplateBox[{"0", 
+       InterpretationBox[
+        DynamicModuleBox[{Typeset`open = False}, 
+         TemplateBox[{"Expression", 
+           StyleBox[
+            TagBox[
+             TooltipBox["\"condition\"", 
+              TagBox[
+               RowBox[{
+                 RowBox[{"(", 
+                   RowBox[{
+                    RowBox[{"tmu", ">", "0"}], "&&", 
+                    RowBox[{"tpi", ">", "tmu"}]}], ")"}], "||", 
+                 RowBox[{"(", 
+                   RowBox[{
+                    RowBox[{"0", "<", "tpi", "<", "tmu"}], "&&", 
+                    RowBox[{"tmu", ">", "0"}]}], ")"}], "||", 
+                 RowBox[{"(", 
+                   RowBox[{
+                    RowBox[{"tmu", "<", "tpi", "<", "0"}], "&&", 
+                    RowBox[{"tmu", "<", "0"}]}], ")"}], "||", 
+                 RowBox[{"(", 
+                   RowBox[{
+                    RowBox[{"tmu", "<", "0"}], "&&", 
+                    RowBox[{"tpi", ">", "0"}]}], ")"}], "||", 
+                 RowBox[{"(", 
+                   RowBox[{
+                    RowBox[{"tmu", "<", "0"}], "&&", 
+                    RowBox[{"tpi", "<", "tmu"}]}], ")"}], "||", 
+                 RowBox[{"(", 
+                   RowBox[{
+                    RowBox[{"tpi", "<", "0"}], "&&", 
+                    RowBox[{"tmu", ">", "0"}]}], ")"}]}], Short[#, 7]& ]], 
+             Annotation[#, 
+              Short[
+               Or[
+                
+                And[$CellContext`tmu > 
+                 0, $CellContext`tpi > $CellContext`tmu], 
+                And[
+                 Inequality[
+                 0, Less, $CellContext`tpi, 
+                  Less, $CellContext`tmu], $CellContext`tmu > 0], 
+                And[
+                 
+                 Inequality[$CellContext`tmu, Less, $CellContext`tpi, Less, 
+                  0], $CellContext`tmu < 0], 
+                And[$CellContext`tmu < 0, $CellContext`tpi > 0], 
+                
+                And[$CellContext`tmu < 
+                 0, $CellContext`tpi < $CellContext`tmu], 
+                And[$CellContext`tpi < 0, $CellContext`tmu > 0]], 7], 
+              "Tooltip"]& ], "IconizedCustomName", StripOnInput -> False], 
+           GridBox[{{
+              RowBox[{
+                TagBox["\"Head: \"", "IconizedLabel"], "\[InvisibleSpace]", 
+                TagBox["Or", "IconizedItem"]}]}, {
+              RowBox[{
+                TagBox["\"Byte count: \"", "IconizedLabel"], 
+                "\[InvisibleSpace]", 
+                TagBox["1304", "IconizedItem"]}]}}, 
+            GridBoxAlignment -> {"Columns" -> {{Left}}}, DefaultBaseStyle -> 
+            "Column", 
+            GridBoxItemSize -> {
+             "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+           Dynamic[Typeset`open]}, "IconizedObject"]], 
+        Or[
+         And[$CellContext`tmu > 0, $CellContext`tpi > $CellContext`tmu], 
+         And[
+          Inequality[
+          0, Less, $CellContext`tpi, 
+           Less, $CellContext`tmu], $CellContext`tmu > 0], 
+         And[
+          
+          Inequality[$CellContext`tmu, Less, $CellContext`tpi, Less, 
+           0], $CellContext`tmu < 0], 
+         And[$CellContext`tmu < 0, $CellContext`tpi > 0], 
+         And[$CellContext`tmu < 0, $CellContext`tpi < $CellContext`tmu], 
+         And[$CellContext`tpi < 0, $CellContext`tmu > 0]], SelectWithContents -> 
+        True, Selectable -> False]},
+      "ConditionalExpression"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"x", "\[Rule]", 
+     TemplateBox[{
+       FractionBox[
+        RowBox[{"tmu", " ", "tpi", " ", 
+          RowBox[{"Log", "[", 
+            FractionBox["tmu", "tpi"], "]"}]}], 
+        RowBox[{"tmu", "-", "tpi"}]], 
+       InterpretationBox[
+        DynamicModuleBox[{Typeset`open = False}, 
+         TemplateBox[{"Expression", 
+           StyleBox[
+            TagBox[
+             TooltipBox["\"condition\"", 
+              TagBox[
+               RowBox[{
+                 RowBox[{"(", 
+                   RowBox[{
+                    RowBox[{"tmu", ">", "0"}], "&&", 
+                    RowBox[{"tpi", ">", "tmu"}]}], ")"}], "||", 
+                 RowBox[{"(", 
+                   RowBox[{
+                    RowBox[{"0", "<", "tpi", "<", "tmu"}], "&&", 
+                    RowBox[{"tmu", ">", "0"}]}], ")"}], "||", 
+                 RowBox[{"(", 
+                   RowBox[{
+                    RowBox[{"tmu", "<", "tpi", "<", "0"}], "&&", 
+                    RowBox[{"tmu", "<", "0"}]}], ")"}], "||", 
+                 RowBox[{"(", 
+                   RowBox[{
+                    RowBox[{"tmu", "<", "0"}], "&&", 
+                    RowBox[{"tpi", "<", "tmu"}]}], ")"}]}], Short[#, 7]& ]], 
+             Annotation[#, 
+              Short[
+               Or[
+                
+                And[$CellContext`tmu > 
+                 0, $CellContext`tpi > $CellContext`tmu], 
+                And[
+                 Inequality[
+                 0, Less, $CellContext`tpi, 
+                  Less, $CellContext`tmu], $CellContext`tmu > 0], 
+                And[
+                 
+                 Inequality[$CellContext`tmu, Less, $CellContext`tpi, Less, 
+                  0], $CellContext`tmu < 0], 
+                
+                And[$CellContext`tmu < 
+                 0, $CellContext`tpi < $CellContext`tmu]], 7], "Tooltip"]& ], 
+            "IconizedCustomName", StripOnInput -> False], 
+           GridBox[{{
+              RowBox[{
+                TagBox["\"Head: \"", "IconizedLabel"], "\[InvisibleSpace]", 
+                TagBox["Or", "IconizedItem"]}]}, {
+              RowBox[{
+                TagBox["\"Byte count: \"", "IconizedLabel"], 
+                "\[InvisibleSpace]", 
+                TagBox["888", "IconizedItem"]}]}}, 
+            GridBoxAlignment -> {"Columns" -> {{Left}}}, DefaultBaseStyle -> 
+            "Column", 
+            GridBoxItemSize -> {
+             "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+           Dynamic[Typeset`open]}, "IconizedObject"]], 
+        Or[
+         And[$CellContext`tmu > 0, $CellContext`tpi > $CellContext`tmu], 
+         And[
+          Inequality[
+          0, Less, $CellContext`tpi, 
+           Less, $CellContext`tmu], $CellContext`tmu > 0], 
+         And[
+          
+          Inequality[$CellContext`tmu, Less, $CellContext`tpi, Less, 
+           0], $CellContext`tmu < 0], 
+         And[$CellContext`tmu < 0, $CellContext`tpi < $CellContext`tmu]], 
+        SelectWithContents -> True, Selectable -> False]},
+      "ConditionalExpression"]}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{{3.953711517868081*^9, 3.953711533797831*^9}, 
+   3.953711608937904*^9, 3.9537116839344*^9, {3.953711787308481*^9, 
+   3.9537118086393557`*^9}, {3.9537118675765467`*^9, 3.953711906080824*^9}, 
+   3.95371196236791*^9},
+ CellLabel->"Out[18]=",ExpressionUUID->"924dbffe-515d-4c36-9042-43ce2283d2a3"]
+}, Open  ]],
+
+Cell["\<\
+N0 = 10000
+tmu = 2.1969811 * 10^-6
+tpi = 2.6033 * 10^-8\
+\>", "Text",
+ CellChangeTimes->{
+  3.9537113303574953`*^9},ExpressionUUID->"dee11c08-f531-4fe7-a444-\
+527c13758f53"]
+},
+WindowSize->{Full, Full},
+WindowMargins->{{235, Automatic}, {63, Automatic}},
+FrontEndVersion->"14.2 for Mac OS X ARM (64-bit) (December 26, 2024)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"73054679-d87b-4c6f-b833-3868247de725"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[554, 20, 1047, 23, 51, "Code",ExpressionUUID->"330a4269-3ef8-45d6-b630-564f6252a25f"],
+Cell[CellGroupData[{
+Cell[1626, 47, 296, 5, 29, "Input",ExpressionUUID->"cfc0b46e-9957-4c85-9bdb-74872076b5af"],
+Cell[1925, 54, 648, 16, 67, "Output",ExpressionUUID->"88335723-7f14-4957-8942-c33bfccd3508"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[2610, 75, 581, 12, 49, "Input",ExpressionUUID->"9aadecab-1901-471f-97df-8259b8d51d3c"],
+Cell[3194, 89, 609, 18, 66, "Output",ExpressionUUID->"81b312ea-1b2c-40ca-8c61-fd8c16e3fe4a"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3840, 112, 610, 12, 29, "Input",ExpressionUUID->"7d806175-0f02-4cbc-b1b7-075de99f885f"],
+Cell[4453, 126, 6954, 166, 156, "Output",ExpressionUUID->"924dbffe-515d-4c36-9042-43ce2283d2a3"]
+}, Open  ]],
+Cell[11422, 295, 183, 7, 77, "Text",ExpressionUUID->"dee11c08-f531-4fe7-a444-527c13758f53"]
+}
+]
+*)
+
