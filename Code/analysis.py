@@ -34,16 +34,29 @@ def binned_maximum_likelihood_fit_2(counts, bin_edges, initial_guess):
     bin_centers = 0.5 * (bin_edges[:-1] + bin_edges[1:])
     bin_width = bin_edges[1] - bin_edges[0]
 
-    MUON_estimate_like, PION_estimate_like = minimize(binned_maximum_likelihood, [2e-8, 2e-6], args=(counts, bin_centers, bin_width, n)).x
+    minimization_result = minimize(
+        binned_maximum_likelihood,
+        x0=[2e-6, 2e-8],
+        args=(counts, bin_centers, bin_width, n),
+        #bounds=[(1e-6, 5e-6), (1e-8, 5e-8)],
+        #method='L-BFGS-B',
+        )
+    
+    MUON_estimate_like, PION_estimate_like = minimization_result.x
+    
+    # Calculate the uncertainties using the covariance matrix
+    #covariance_matrix = np.linalg.inv(minimization_result.hess_inv.todense())
+    covariance_matrix = np.sqrt(np.diag(minimization_result.hess_inv * 0.5))
 
-    MUON_uncer_like, PION_uncer_like = 0, 0
+    MUON_uncer_like, PION_uncer_like = covariance_matrix
 
     return MUON_estimate_like, PION_estimate_like, MUON_uncer_like, PION_uncer_like
 
+"""
 def binned_maximum_likelihood_fit(counts, bin_edges, initial_guess=[1, 1]):
     """
-    Perform a binned maximum likelihood fit to the histogram to extract estimates for the mean lifetimes.
-    """
+    #Perform a binned maximum likelihood fit to the histogram to extract estimates for the mean lifetimes.
+"""
 
     # compute the bin centers and bin widths to do the minimization faster
     n = np.sum(counts)
@@ -137,7 +150,6 @@ def get_uncertainties(estimate, counts, bin_centers, bin_width, n, nll_min):
     
     return muon_uncertainty, pion_uncertainty
 
-
 def get_uncertainties_2d(estimate, counts, bin_centers, bin_width, n, nll_min):
     delta = 0.5  # 1-sigma for 2D likelihood
 
@@ -167,6 +179,8 @@ def get_uncertainties_2d(estimate, counts, bin_centers, bin_width, n, nll_min):
 
     return muon_uncertainty, pion_uncertainty
     
+"""
+
 def binned_maximum_likelihood(params, counts, bin_centers, bin_width, total_counts):
 
     muon_mean_lifetime, pion_mean_lifetime = params
