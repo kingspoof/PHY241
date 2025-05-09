@@ -102,7 +102,7 @@ After we got all points generated, we draw a histogram, figure \ref{fig:histogra
     \label{fig:histogram}
 \end{figure}
 
-Next we fitted back on the generated histogram the distribution, getting values for the lifetimes and corresponding uncertainties. The fitting was supposed to be done via a maximum likelihood fit, but as can be seen in figure \ref{fig:comparison_estimators}, the least squares method gives better results than the maximum likelihood fit. In figure \ref{fig:comparison_estimators} the maximum likelihood fit is implemented with the SciPy \lstinline|minimize| function, the least squares fit is done with the SciPy \lstinline|curve_fit| function and the full is a stack of fitters from \lstinline|dual_annealing| over a local \lstinline|minimize| to a custom Markov-chain minimizer.
+Next we fitted back on the generated histogram the distribution, getting values for the lifetimes and corresponding uncertainties. The fitting was supposed to be done via a maximum likelihood fit, but as can be seen in figure \ref{fig:comparison_estimators}, the least squares method gives better results than the maximum likelihood fit. In figure \ref{fig:comparison_estimators} the maximum likelihood fit is implemented with the SciPy \lstinline{minimize} function, the least squares fit is done with the SciPy \lstinline{curve_fit} function and the full is a stack of fitters from \lstinline{dual_annealing} over a local \lstinline{minimize} to a custom Markov-chain minimizer.
 
 \begin{figure}[h]
     \centering
@@ -115,7 +115,7 @@ As can be seen in figure \ref{fig:comparison_estimators} the best representation
 
 \section{A bit more realistic}
 
-In section \ref{sec:simple_simulation}, the distribution of points were directly generated from the distribution \ref{eq:decay_chain_equation}. This isn't realistic, since the measurements itself aren't precise and have some noise to them. To implement this into the simulation, all simulated decay times got "smeared" by a random 
+In section \ref{sec:simple_simulation}, the distribution of points were directly generated from the distribution \ref{eq:decay_chain_equation}. This isn't realistic, since the measurements itself aren't precise and have some noise to them. To implement this into the simulation, all simulated decay times got "smeared" by a random value drawn out of a normal distribution. The 
 
 \chapter{Results}
 % present key results (plots, tables, values)
