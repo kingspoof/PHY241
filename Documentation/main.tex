@@ -45,22 +45,24 @@
 
 \chapter{Introduction}
 % what we want to do
-In this project, a simplified simulation of an experiment for measuring the lifetimes of charges pions (\pion) and muons (\muon) will be performed.
+In this project, a simplified simulation of an experiment will be performed to measure the lifetimes of pions (\pion) and muons (\muon) charges.
 
 % problem description
 \section{Motivation}
-Negatively charged pions (\pion) are composite particles, that consist of a down quark and an up antiquark. They are unstable and decay predominantly to a muon (\muon) and a muon-antineutrino ($\bar{v_{\mu}}$). The muon, a heavier partner of the electron, is also unstable and decays into an electron (\electron), a muon-neutrino ($v_{\mu}$) and an electron antineutrino ($\bar{v_{e}}$). Neglecting any experimental effects, the time distribution of the \electron produced in the decay chain is given by
+Negatively charged pions (\pion) are composite particles that consist of a down quark and an up antiquark. They are unstable and decay predominantly to a muon (\muon) and a muon-antineutrino ($\bar{v_{\mu}}$). The muon, a heavier partner of the electron, is also unstable and decays into an electron (\electron), a muon-neutrino ($v_{\mu}$) and an electron antineutrino ($\bar{v_{e}}$). Neglecting any experimental effects, the time distribution of the \electron produced in the decay chain is given by
 
 \begin{equation}
     N(t) = \frac{N_0}{\tau_{\mu} - \tau_{\pi}}  \left[ \exp{-\frac{t}{\tau_{\mu}}} - \exp{-\frac{t}{\tau_{\pi}}} \right]
     \label{eq:decay_chain_equation}
 \end{equation}
 
+
+
 Where $\tau_{\mu}$ and $\tau_{\pi}$ are the mean lifetimes of the \muon and \pion respectively. A measurement of this time distribution allows extracting times for $\tau_{\mu}$ and $\tau_{\pi}$.
 
 \section{Setup}
 
-The basic elements of the corresponding real experiment are shown in Figure \ref{fig:experimental_setup} negatively charged pion (\pion) is stopped in the third scintillator. The emitted electron (\electron) is then detected in the fifth scintillator. The time difference between the moment the \pion is stopped in the third scintillator and the \electron is detected in the fifth scintillator is recorded. A spectrum of time differences for many such events will allow for an estimation of the half life times of the \pion ($\tau_{\pi}$) and the \muon ($\tau_{\mu}$).
+The basic elements of the corresponding real experiment are shown in Figure \ref{fig:experimental_setup} negatively charged pion (\pion) is stopped in the third scintillator. The electron emitted (\electron) is then detected in the fifth scintillator. The time difference between the moment the \pion is stopped in the third scintillator and the \electron is detected in the fifth scintillator is recorded. A spectrum of time differences for many such events will allow for an estimation of the half life times of the \pion ($\tau_{\pi}$) and the \muon ($\tau_{\mu}$).
 
 \begin{figure}[h]
 \begin{center}
@@ -78,7 +80,7 @@ The basic elements of the corresponding real experiment are shown in Figure \ref
 
 In this chapter we go over the simulations we have done, at first a simple simulation and second a more realistic example.
 
-\section{Simple simulation}
+\section{Simple simulation} \label{sec:simple_simulation}
 % d\tau_{\pi}ription of the simulation model
 % assumptions made
 % algorithms or numerical methods used
@@ -100,7 +102,7 @@ After we got all points generated, we draw a histogram, figure \ref{fig:histogra
     \label{fig:histogram}
 \end{figure}
 
-Next we fitted back on the generated histogram the distribution, getting values for the lifetimes and corresponding uncertainties. The fitting was supposed to be done via a maximum likelihood fit, but as can be seen in figure \ref{fig:comparison_estimators}, the least squares method gives better results than the maximum likelihood fit. In figure \ref{fig:comparison_estimators} the maximum likelihood fit is implemented with the SciPy \lstinline|minimize| function, the least squares fit is done with the SciPy \lstinline|curve_fit| function and the full is a stack of fitters from \lstinline|dual_annealing| over a local \lstinline|minimize| to a custom markov-chain minimizer.
+Next we fitted back on the generated histogram the distribution, getting values for the lifetimes and corresponding uncertainties. The fitting was supposed to be done via a maximum likelihood fit, but as can be seen in figure \ref{fig:comparison_estimators}, the least squares method gives better results than the maximum likelihood fit. In figure \ref{fig:comparison_estimators} the maximum likelihood fit is implemented with the SciPy \lstinline|minimize| function, the least squares fit is done with the SciPy \lstinline|curve_fit| function and the full is a stack of fitters from \lstinline|dual_annealing| over a local \lstinline|minimize| to a custom Markov-chain minimizer.
 
 \begin{figure}[h]
     \centering
@@ -109,9 +111,11 @@ Next we fitted back on the generated histogram the distribution, getting values 
     \label{fig:comparison_estimators}
 \end{figure}
 
-As can be seen in figure \ref{fig:comparison_estimators} the best representation to the base distribution gives the least squares fit, which we will use for the further exercises.
+As can be seen in figure \ref{fig:comparison_estimators} the best representation of the base distribution gives the least squares fit, which we will use for the further exercises.
 
+\section{A bit more realistic}
 
+In section \ref{sec:simple_simulation}, the distribution of points were directly generated from the distribution \ref{eq:decay_chain_equation}. This isn't realistic, since the measurements itself aren't precise and have some noise to them. To implement this into the simulation, all simulated decay times got "smeared" by a random 
 
 \chapter{Results}
 % present key results (plots, tables, values)
