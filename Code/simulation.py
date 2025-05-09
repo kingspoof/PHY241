@@ -1,5 +1,5 @@
 from numpy import exp, log, array
-from numpy.random import random
+from numpy.random import random, normal
 from config import *
 
 T_MAX = MUON_MEAN_LIFETIME * PION_MEAN_LIFETIME * log(MUON_MEAN_LIFETIME/PION_MEAN_LIFETIME) / (MUON_MEAN_LIFETIME - PION_MEAN_LIFETIME)
@@ -21,3 +21,9 @@ def simulate_decay_times(N0, t_end):
     points = array([Random_number_from_distribution(N0, t_end, N_MAX) for _ in range(N0)])
 
     return points
+
+def smear_decay_times(decay_times, sigma, mu=0):
+    times = decay_times[:,0]
+    noise = normal(loc=mu, scale=sigma, size=times.shape)
+    decay_times[:,0] = decay_times[:,0] + noise
+    return decay_times
