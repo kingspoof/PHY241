@@ -17,6 +17,7 @@
 
 % Allgemeine weite um alle Figures darauf zu beziehen
 \newcommand\Plotwidth{0.8}
+\newcommand\DoublePlotwidth{0.9}
 \newcommand\Bilderwidth{0.8}
 
 % Setup wie siunix zahlen schreibt
@@ -113,13 +114,111 @@ Next we fitted back on the generated histogram the distribution, getting values 
 
 As can be seen in figure \ref{fig:comparison_estimators} the best representation of the base distribution gives the least squares fit, which we will use for the further exercises.
 
-\section{A bit more realistic}
+\section{A bit more realistic} \label{sec:realistic_simulation}
 
-In section \ref{sec:simple_simulation}, the distribution of points were directly generated from the distribution \ref{eq:decay_chain_equation}. This isn't realistic, since the measurements itself aren't precise and have some noise to them. To implement this into the simulation, all simulated decay times got "smeared" by a random 
+In section \ref{sec:simple_simulation}, the distribution of points were directly generated from the distribution \ref{eq:decay_chain_equation}. This isn't realistic, since the measurements itself aren't precise and have some noise to them. To implement this into the simulation, all simulated decay times got "smeared" by a random value drawn from a normal distribution. The standard deviation of this distribution was set to three different values 0.01, 0.1, 1 times the \pion Mean lifetime. The resulting histogram can be seen in figure \ref{fig:smeared_hist}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\Plotwidth\textwidth]{images/smeared_decay_histogram_150bins.pdf}
+    \caption{Histogram of smeared decay times. Visually, the distribution looks the same as the not smeared one in Figure \textcolor{red}{insert figure number}}
+    \label{fig:smeared_hist}
+\end{figure}
+
+This now more realistic data is now piped through the same algorithms as in section \ref{sec:simple_simulation}. These results can be compared to see if and how the smearing influences the fitting of the lifetimes. For fitting methods both, maximize-likelihood-method (MLM) and least-squares-method (LSM), got used.  
 
 \chapter{Results}
 % present key results (plots, tables, values)
 % explain findings objectively, without interpretation
+
+In this chapter the results of the simulations getting discussed.
+
+\section{Simple Simulation}
+
+\section{A bit more realistic simulation}
+
+In section \ref{sec:realistic_simulation} the generated data got more realistic with differently strong smearing.
+
+\subsection{Smeared with 0.01 times the \texorpdfstring{\pion}{pion} Mean lifetime}
+
+In figure \ref{fig:results_smeared_0} is clear that the MLM yields better results as the LSF. Especially in for the \pion lifetime the MLM gives an impressively precise result in terms of the mean that is close to the real\footnote{Real in terms of: "This is the value that the distribution is based on", not as in "The real \pion lifetime.“ The real lifetime is unknown and for calculating the distribution a measurement was used.} value. Also, the uncertainties on the measurement are similar to the standard deviation, which means that the uncertainties get calculated correctly. This is also seen in figure \ref{fig:smeared_pull_0} which depicts the pull.
+
+\begin{figure}[h]
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\DoublePlotwidth\textwidth]{images/4b_hist_0_likelihood.pdf}
+%   \caption{}
+\end{subfigure}
+
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\DoublePlotwidth\textwidth]{images/4b_hist_0_squares.pdf}
+%   \caption{}
+\end{subfigure}
+\caption{Results of 1000 different sets of simulated and fitted data. Here the data was smeared with 0.01 time the \pion Mean lifetime.}
+\label{fig:results_smeared_0}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\DoublePlotwidth\textwidth]{images/4b_pull_0_likelihood.pdf}
+    \caption{The Pull of the result of the MLM from figure \ref{fig:results_smeared_0}. The pull shows how good the \pion lifetime fit is, because the fitted normal distribution is very similar to the standard normal distribution.}
+    \label{fig:smeared_pull_0}
+\end{figure}
+
+\FloatBarrier
+\subsection{Smeared with 0.1 times the \texorpdfstring{\pion}{pion} Mean lifetime}
+
+\begin{figure}[h]
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\DoublePlotwidth\textwidth]{images/4b_hist_1_likelihood.pdf}
+%   \caption{}
+\end{subfigure}
+
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\DoublePlotwidth\textwidth]{images/4b_hist_1_squares.pdf}
+%   \caption{}
+\end{subfigure}
+\caption{Results of 1000 different sets of simulated and fitted data. Here the data was smeared with 0.1 time the \pion Mean lifetime.}
+\label{fig:results_smeared_1}
+\end{figure}
+
+\FloatBarrier
+\subsection{Smeared with 1 times the \texorpdfstring{\pion}{pion} Mean lifetime}
+
+\begin{figure}[h]
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\DoublePlotwidth\textwidth]{images/4b_hist_2_likelihood.pdf}
+%   \caption{}
+\end{subfigure}
+
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\DoublePlotwidth\textwidth]{images/4b_hist_2_squares.pdf}
+%   \caption{}
+\end{subfigure}
+\caption{Results of 1000 different sets of simulated and fitted data. Here the data was smeared with 1 time the \pion Mean lifetime.}
+\label{fig:results_smeared_2}
+\end{figure}
+
+\begin{figure}[h]
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\Plotwidth\textwidth]{example-image-duck}
+  \caption{1a}
+\end{subfigure}
+
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\Plotwidth\textwidth]{example-image-duck}
+  \caption{1b}
+\end{subfigure}
+\caption{plots of....}
+\label{fig:fig}
+\end{figure}
 
 \chapter{Discussion}
 % interpretation of the results
