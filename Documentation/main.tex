@@ -70,6 +70,28 @@ The basic elements of the corresponding real experiment are shown in Figure \ref
 \label{fig:experimental_setup}
 \end{figure}
 
+\section{Validation of the simulation using the pull}
+\begin{equation}
+    \si{pull} = \frac{\bar{\tau} - \tau}{\sigma_{\bar{\tau}}}
+    \label{eq:pull}
+\end{equation}
+The pull allows for a check of the estimated values. The pull of many simulations should follow a gaussian distribution with a mean of 0 as well as a standard deviation of 1. A deviation from these values can be an indication for the following problems:
+
+Deviations in the mean value from 0, indicate a bias in the estimation of the lifetimes. Whereas a standard deviation larger or smaller than 1 indicate an under- / overestimation of the uncertainties. 
+
+\section{Computational implementation}
+In this project, a simplified version of the experiment is simulated. At first, \num{10000} decay time measurements are simulated using the known values of the lifetimes of the \pion and \muon. This corresponds to the time difference between the moment the \pion is stopped in scintillator 3 and the \electron is detected in scintillator 5. Working with these simulated decay times, the goal is to extract the lifetimes of the \pion and \muon.
+
+For the implementation python 3.10.11 is used, with the following packages:
+\begin{itemize}
+    \item numpy 2.0.0
+    \item matplotlib 3.9.2
+    \item scipy 1.14.1
+    \item pandas 2.2.3
+\end{itemize}
+All used packages are freely available under an open-source license. 
+The full implementation of the simulation as well as this documentation is available on \cite{GitHub}.
+
 % goal of the simulation
 % short theoretical background
 
@@ -77,40 +99,77 @@ The basic elements of the corresponding real experiment are shown in Figure \ref
 \chapter{Methods}
 
 In this chapter we go over the simulations we have done, at first a simple simulation and second a more realistic example.
+In this chapter, the two performed simulations are described. The first simulation is a simpler version of the second one. Latter of which is a bit more realistic, as it includes the finite time resolution of the apparatus. 
 
 \section{Simple simulation}
+The goal of the first simulation is to simulate the decay of \pion and \muon without taking the finite time resolution of the apparatus into account. The simulation for this will take the following steps:
+\begin{itemize}
+    \item Generated \num{10000} decay times according to the equation \ref{eq:decay_chain_equation} using the knows values of the lifetimes of the \pion and \muon.
+    \item Perform a binned maximum likelihood fit to the histogram to extract the estimates for the lifetimes of the \pion and \muon, as well as the uncertainties.
+    \item Repeat the simulation \num{100} times to get a distribution of the estimates, to calculate the standard deviation.
+    \item Validation of the estimates using the pull, as defined in equation \ref{eq:pull}.
+\end{itemize}
 % d\tau_{\pi}ription of the simulation model
 % assumptions made
 % algorithms or numerical methods used
 % software / tools used
 
-For the simple simulation, we simulated \num{10000} decays according to equation \ref{eq:decay_chain_equation} and known values from the Particle Data Group. \cite{ParticleDataGroup:2024cfk}
+\section{Implementation of the simple simulation}
+
+\subsection{Simulation of the decay times}
+For the simple simulation, equation \ref{eq:decay_chain_equation} is used to generate \num{10000} decay times using the known values of the lifetimes of the \pion and \muon. These values are given by:
 
 \pion Mean lifetime: \qty{2.6033(0.0005)e-8}{\s} \\
-\muon Mean lifetime: \qty{2.1969811(0.0000022)e-6}{\s}
+\muon Mean lifetime: \qty{2.1969811(0.0000022)e-6}{\s} \\
+reference: \cite{ParticleDataGroup:2024cfk}
 
-For the random sampling we generate random point from a constant distribution with width from \qty{0}{\s} to \qty{2e-5}{\s} and a height from 0 to the maximum counts of the distribution we want to sample from. We check if this point is in the desired distribution, if not, we generate a new random point, if it is in there, we return it. This we do until we have reached the desired amount of points in the distribution.
+%TODO: add a plot of the distribution without anything in it
 
-After we got all points generated, we draw a histogram, figure \ref{fig:histogram}.
+The decay times are generated using the accept-reject method. For this, a random point on the domain of the distribution is generated (t, y). If the generated point is below the distribution, it is accepted, if not, it is rejected. This is done until the target number of points is reached. 
+The decay time $t$ is generated using a uniform distribution between 0 and \qty{1}{\s}. The count $y$ is also drawn from a uniform distribution between \qty{0} and the maximum value of the target distribution $max(N(t))$
 
-\begin{figure}[h]
+The random points generated are shown in figure \ref{fig:histogram}. The overlaid distribution is given by equation \ref{eq:decay_chain_equation} using the know values.
+
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=\Plotwidth\textwidth]{images/simulated_decay_histogram.pdf}
-    \caption{The histogram generated from random sampling the given distribution}
+    \caption{The histogram generated using accept-reject method.}
     \label{fig:histogram}
 \end{figure}
 
-Next we fitted back on the generated histogram the distribution, getting values for the lifetimes and corresponding uncertainties. The fitting was supposed to be done via a maximum likelihood fit, but as can be seen in figure \ref{fig:comparison_estimators}, the least squares method gives better results than the maximum likelihood fit. In figure \ref{fig:comparison_estimators} the maximum likelihood fit is implemented with the SciPy \lstinline|minimize| function, the least squares fit is done with the SciPy \lstinline|curve_fit| function and the full is a stack of fitters from \lstinline|dual_annealing| over a local \lstinline|minimize| to a custom markov-chain minimizer.
+\subsection{Estimation of the lifetimes}
+Next a binned-maximum-likelihood was performed on the histogram. For this the likelihood was calculated ans minimized using the combination of scipy's minimization function as well as a custim markov-chain-monte-carlo minimizer. Although this method worked, it presented with multiple problems: The entire estimation process took a long time, as the mcmc-method required to run for some \num{10000} iterations to get a good estimate. Furthermore it presented with a bias on the lifetime of the \pion, as can be seen in figure \ref{fig:pull_likelihood_method}. 
 
-\begin{figure}[h]
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\Plotwidth\textwidth]{images/estimators_pull_likelihood.pdf}
+    \caption{The pull of the estimated lifetimes using the binned maximum likelihood method.}
+    \label{fig:pull_likelihood_method}
+\end{figure}
+
+To improve the estimation, the least squared method was also considered. Using the same formula and data, it returned better estimations, as can be seen in figure \ref{fig:comparison_estimators}. The least squares method was implemented using the \lstinline|curve_fit| function from the scipy package and was also done on the bins. 
+
+
+%Next we fitted back on the generated histogram the distribution, getting values for the lifetimes and corresponding uncertainties. The fitting was supposed to be done via a maximum likelihood fit, but as can be seen in figure \ref{fig:comparison_estimators}, the least squares method gives better results than the maximum likelihood fit. In figure \ref{fig:comparison_estimators} the maximum likelihood fit is implemented with the SciPy \lstinline|minimize| function, the least squares fit is done with the SciPy \lstinline|curve_fit| function and the full is a stack of fitters from \lstinline|dual_annealing| over a local \lstinline|minimize| to a custom markov-chain minimizer.
+
+\begin{figure}[H]
     \centering
     \includegraphics[width=\Plotwidth\textwidth]{images/comparison_estimators.pdf}
     \caption{Comparison between different estimators and the base distribution, overlaid on the histogram.}
     \label{fig:comparison_estimators}
 \end{figure}
 
+As the least squared method returns better estimations for the lifetimes, it will also be used for the second simulation as an extention to the binned maximum likelihood method.
+
 As can be seen in figure \ref{fig:comparison_estimators} the best representation to the base distribution gives the least squares fit, which we will use for the further exercises.
 
+\subsection{Uncertainties of the estimators}
+For the estimation of the uncertainties, two different methods were used. 
+\begin{itemize}
+    \item For the method using the binned maximum likelihood, the uncertainties were calculated by finding the points, where the likelihood is \qty{0.5} away from the minimum. This is done by using the minimal value of the likelihood and subtracting \qty{0.5} from it. Then the roots of the likelihood function were calculated using newton-raphons method. 
+    \item For the least squared method, the uncertainties were calculated using the covariance matrix, which is returned as part of the \lstinline{minimization_results} object. The uncertainties are given by the root of half of the diagonal elements of the covariance matrix.
+\end{itemize}
 
 
 \chapter{Results}
