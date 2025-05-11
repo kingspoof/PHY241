@@ -17,6 +17,7 @@
 
 % Allgemeine weite um alle Figures darauf zu beziehen
 \newcommand\Plotwidth{0.8}
+\newcommand\DoublePlotwidth{0.9}
 \newcommand\Bilderwidth{0.8}
 
 % Setup wie siunix zahlen schreibt
@@ -45,22 +46,24 @@
 
 \chapter{Introduction}
 % what we want to do
-In this project, a simplified simulation of an experiment for measuring the lifetimes of charges pions (\pion) and muons (\muon) will be performed.
+In this project, a simplified simulation of an experiment will be performed to measure the lifetimes of pions (\pion) and muons (\muon) charges.
 
 % problem description
 \section{Motivation}
-Negatively charged pions (\pion) are composite particles, that consist of a down quark and an up antiquark. They are unstable and decay predominantly to a muon (\muon) and a muon-antineutrino ($\bar{v_{\mu}}$). The muon, a heavier partner of the electron, is also unstable and decays into an electron (\electron), a muon-neutrino ($v_{\mu}$) and an electron antineutrino ($\bar{v_{e}}$). Neglecting any experimental effects, the time distribution of the \electron produced in the decay chain is given by
+Negatively charged pions (\pion) are composite particles that consist of a down quark and an up antiquark. They are unstable and decay predominantly to a muon (\muon) and a muon-antineutrino ($\bar{v_{\mu}}$). The muon, a heavier partner of the electron, is also unstable and decays into an electron (\electron), a muon-neutrino ($v_{\mu}$) and an electron antineutrino ($\bar{v_{e}}$). Neglecting any experimental effects, the time distribution of the \electron produced in the decay chain is given by
 
 \begin{equation}
     N(t) = \frac{N_0}{\tau_{\mu} - \tau_{\pi}}  \left[ \exp{-\frac{t}{\tau_{\mu}}} - \exp{-\frac{t}{\tau_{\pi}}} \right]
     \label{eq:decay_chain_equation}
 \end{equation}
 
+
+
 Where $\tau_{\mu}$ and $\tau_{\pi}$ are the mean lifetimes of the \muon and \pion respectively. A measurement of this time distribution allows extracting times for $\tau_{\mu}$ and $\tau_{\pi}$.
 
 \section{Setup}
 
-The basic elements of the corresponding real experiment are shown in Figure \ref{fig:experimental_setup} negatively charged pion (\pion) is stopped in the third scintillator. The emitted electron (\electron) is then detected in the fifth scintillator. The time difference between the moment the \pion is stopped in the third scintillator and the \electron is detected in the fifth scintillator is recorded. A spectrum of time differences for many such events will allow for an estimation of the half life times of the \pion ($\tau_{\pi}$) and the \muon ($\tau_{\mu}$).
+The basic elements of the corresponding real experiment are shown in Figure \ref{fig:experimental_setup} negatively charged pion (\pion) is stopped in the third scintillator. The electron emitted (\electron) is then detected in the fifth scintillator. The time difference between the moment the \pion is stopped in the third scintillator and the \electron is detected in the fifth scintillator is recorded. A spectrum of time differences for many such events will allow for an estimation of the half life times of the \pion ($\tau_{\pi}$) and the \muon ($\tau_{\mu}$).
 
 \begin{figure}[h]
 \begin{center}
@@ -78,6 +81,21 @@ The basic elements of the corresponding real experiment are shown in Figure \ref
 The pull allows for a check of the estimated values. The pull of many simulations should follow a gaussian distribution with a mean of 0 as well as a standard deviation of 1. A deviation from these values can be an indication for the following problems:
 
 Deviations in the mean value from 0, indicate a bias in the estimation of the lifetimes. Whereas a standard deviation larger or smaller than 1 indicate an under- / overestimation of the uncertainties. 
+
+\section{Minimization of the likelihood}
+The likelihood of a data set is given by the following equation:
+
+\begin{equation}
+    L = P(x | theta)
+    \label{eq:likelihood_base}
+\end{equation}
+
+To simplify computation as well as numerical stability, the negative log likelihood is used. In the case of the decay times, the nll is given by:
+\begin{equation}
+  \log{nll} = -\sum_{i=1}^{N} c_i * \log{\bar{c_i}} - \bar{c_i} - \log{c_i!}
+  \label{eq:likelihood}
+\end{equation}
+where $c_i$ is the true number of counts in the bin $i$ and $\bar{c_i}$ the expected count.
 
 \section{Computational implementation}
 In this project, a simplified version of the experiment is simulated. At first, \num{10000} decay time measurements are simulated using the known values of the lifetimes of the \pion and \muon. This corresponds to the time difference between the moment the \pion is stopped in scintillator 3 and the \electron is detected in scintillator 5. Working with these simulated decay times, the goal is to extract the lifetimes of the \pion and \muon.
@@ -97,38 +115,58 @@ The full implementation of the simulation as well as this documentation is avail
 
 \FloatBarrier
 \chapter{Methods}
+In this chapter, the two performed simulations are described. The first one is an estimation of the lifetimes of the \pion and \muon using previously generated decay times. The second simulation will build on the first one, but will include the finite time resolution of the apparatus. 
 
-In this chapter we go over the simulations we have done, at first a simple simulation and second a more realistic example.
-In this chapter, the two performed simulations are described. The first simulation is a simpler version of the second one. Latter of which is a bit more realistic, as it includes the finite time resolution of the apparatus. 
-
-\section{Simple simulation}
+\section{Simple simulation} \label{sec:simple_simulation}
 The goal of the first simulation is to simulate the decay of \pion and \muon without taking the finite time resolution of the apparatus into account. The simulation for this will take the following steps:
 \begin{itemize}
-    \item Generated \num{10000} decay times according to the equation \ref{eq:decay_chain_equation} using the knows values of the lifetimes of the \pion and \muon.
-    \item Perform a binned maximum likelihood fit to the histogram to extract the estimates for the lifetimes of the \pion and \muon, as well as the uncertainties.
-    \item Repeat the simulation \num{100} times to get a distribution of the estimates, to calculate the standard deviation.
-    \item Validation of the estimates using the pull, as defined in equation \ref{eq:pull}.
+  \item Generation of \num{10000} decay times using equation \ref{eq:decay_chain_equation} with the known    values of the lifetimes.
+  \item Estimation of the lifetimes including their respective uncertainties using a binned maximum likelihood fit to the histogram of the decay times.
+  \item Repeat the simulation \num{100} times to get a distribution of the estimates and the pulls.
+  \item Validation of the simulation using the pull, as defined in equation \ref{eq:pull}.
 \end{itemize}
-% d\tau_{\pi}ription of the simulation model
-% assumptions made
-% algorithms or numerical methods used
-% software / tools used
+
+\section{A bit more realistic simulation} \label{sec:realistic_simulation}
+The second simulation will build on the first one, but will include the finite time resultion of the apparatus. The goal is to see how this affects the results of the fit. The simulation will take the following steps:
+
+\begin{itemize}
+  \item Generation of \num{10000} decay times using equation \ref{eq:decay_chain_equation} using the know values of the lifetimes. A "smear" will be done on each decay time with a random offset drawn from a gaussian distribution with a mean of $\mu = 0$ and a standard deviation $\sigma_t$. This will be done for the following values of $\sigma_t = \frac{1}{100}, \frac{1}{10}, 1 * \tau$
+  \item Fitting of the three "smeard" time specta with the original function from section \ref{sec:simple_simulation}. 
+  \item Lastly, the quality of the fit and the results of the parameters will be judged.
+\end{itemize}
+
+
+
+In section \ref{sec:simple_simulation}, the distribution of points were directly generated from the distribution \ref{eq:decay_chain_equation}. This isn't realistic, since the measurements itself aren't precise and have some noise to them. To implement this into the simulation, all simulated decay times got "smeared" by a random value drawn from a normal distribution. The standard deviation of this distribution was set to three different values 0.01, 0.1, 1 times the \pion Mean lifetime. The resulting histogram can be seen in figure \ref{fig:smeared_hist}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\Plotwidth\textwidth]{images/smeared_decay_histogram_150bins.pdf}
+    \caption{Histogram of smeared decay times. Visually, the distribution looks the same as the not smeared one in Figure \textcolor{red}{insert figure number}}
+    \label{fig:smeared_hist}
+\end{figure}
+
+This now more realistic data is now piped through the same algorithms as in section \ref{sec:simple_simulation}. These results can be compared to see if and how the smearing influences the fitting of the lifetimes. For fitting methods both, maximize-likelihood-method (MLM) and least-squares-method (LSM), got used.  
+
+\chapter{Results}
+% present key results (plots, tables, values)
+% explain findings objectively, without interpretation
+
+In this chapter, the results of the simulations including their implementations are discussed.
 
 \section{Implementation of the simple simulation}
 
 \subsection{Simulation of the decay times}
-For the simple simulation, equation \ref{eq:decay_chain_equation} is used to generate \num{10000} decay times using the known values of the lifetimes of the \pion and \muon. These values are given by:
+To generate the \num{10000} decay times, equation \ref{eq:decay_chain_equation} is used, with the known values of the lifetimes of the \pion and \muon. The known values are given by: \cite{ParticleDataGroup:2024cfk}
 
 \pion Mean lifetime: \qty{2.6033(0.0005)e-8}{\s} \\
 \muon Mean lifetime: \qty{2.1969811(0.0000022)e-6}{\s} \\
-reference: \cite{ParticleDataGroup:2024cfk}
 
 %TODO: add a plot of the distribution without anything in it
-
 The decay times are generated using the accept-reject method. For this, a random point on the domain of the distribution is generated (t, y). If the generated point is below the distribution, it is accepted, if not, it is rejected. This is done until the target number of points is reached. 
 The decay time $t$ is generated using a uniform distribution between 0 and \qty{1}{\s}. The count $y$ is also drawn from a uniform distribution between \qty{0} and the maximum value of the target distribution $max(N(t))$
 
-The random points generated are shown in figure \ref{fig:histogram}. The overlaid distribution is given by equation \ref{eq:decay_chain_equation} using the know values.
+The random points generated are shown in figure \ref{fig:histogram} in form of a histogram. The overlaid distribution is given by equation \ref{eq:decay_chain_equation} using the know values.
 
 
 \begin{figure}[H]
@@ -139,7 +177,7 @@ The random points generated are shown in figure \ref{fig:histogram}. The overlai
 \end{figure}
 
 \subsection{Estimation of the lifetimes}
-Next a binned-maximum-likelihood was performed on the histogram. For this the likelihood was calculated ans minimized using the combination of scipy's minimization function as well as a custim markov-chain-monte-carlo minimizer. Although this method worked, it presented with multiple problems: The entire estimation process took a long time, as the mcmc-method required to run for some \num{10000} iterations to get a good estimate. Furthermore it presented with a bias on the lifetime of the \pion, as can be seen in figure \ref{fig:pull_likelihood_method}. 
+Next a binned-maximum-likelihood was performed on the histogram. For this the likelihood was calculated according to equation \ref{eq:likelihood} and minimized using the combination of scipy's minimization function as well as a custim markov-chain-monte-carlo minimizer. Although this method worked, it presented with multiple problems: The entire estimation process took a long time, as the mcmc-method required to run for some \num{10000} iterations to get a good estimate. Furthermore it presented with a bias on the lifetime of the \muon, as can be seen in figure \ref{fig:pull_likelihood_method}. 
 
 \begin{figure}[H]
     \centering
@@ -162,19 +200,125 @@ To improve the estimation, the least squared method was also considered. Using t
 
 As the least squared method returns better estimations for the lifetimes, it will also be used for the second simulation as an extention to the binned maximum likelihood method.
 
-As can be seen in figure \ref{fig:comparison_estimators} the best representation to the base distribution gives the least squares fit, which we will use for the further exercises.
-
 \subsection{Uncertainties of the estimators}
 For the estimation of the uncertainties, two different methods were used. 
 \begin{itemize}
-    \item For the method using the binned maximum likelihood, the uncertainties were calculated by finding the points, where the likelihood is \qty{0.5} away from the minimum. This is done by using the minimal value of the likelihood and subtracting \qty{0.5} from it. Then the roots of the likelihood function were calculated using newton-raphons method. 
+    \item For the method using the binned maximum likelihood, the uncertainties were calculated by finding the points, where the likelihood is \qty{0.5} (absolute) away from the minimum. This is done by using the minimal value of the likelihood and subtracting \qty{0.5} from it. Then the roots of the likelihood are calculated using the newton-raphson method. 
     \item For the least squared method, the uncertainties were calculated using the covariance matrix, which is returned as part of the \lstinline{minimization_results} object. The uncertainties are given by the root of half of the diagonal elements of the covariance matrix.
 \end{itemize}
 
+To check, if the uncertainties were correct, the pull was calculated for each of the simulations according to equation \ref{eq:pull}. This resulted in the following pull distributions, which can be seein in figure \ref{fig:pull_likelihood_method} for the binned maximum likelihood and \ref{fig:pull_least_squares_method} for the least squares method. 
 
-\chapter{Results}
-% present key results (plots, tables, values)
-% explain findings objectively, without interpretation
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\Plotwidth\textwidth]{images/comparison_estimators.pdf}
+  \label{fig:pull_least_squares_method}
+\end{figure}
+
+\section{Comparison of the estimations}
+Using the two different methods, the lifetimes of the \pion and \muon were estimated. The results are shown in table \ref{tab:results}.
+
+\begin{table}[H]
+  \begin{tabular}{l|ccc}
+                & true value & binned-maximum-likelihood method & least-squares method \\ \hline
+  muon lifetime &            &                                  &                      \\
+  pion lifetime &            &                                  &                     
+  \end{tabular}
+  \caption{Results of the estimations of the lifetimes using both the binned-maximum-likelihood as well as the least-squares method. The true values are given by \cite{ParticleDataGroup:2024cfk}.}
+  \label{tab:results}
+\end{table}
+
+
+\section{A bit more realistic simulation}
+
+In section \ref{sec:realistic_simulation} the generated data got more realistic with differently strong smearing.
+
+\subsection{Smeared with 0.01 times the \texorpdfstring{\pion}{pion} Mean lifetime}
+
+In figure \ref{fig:results_smeared_0} is clear that the MLM yields better results as the LSF. Especially in for the \pion lifetime the MLM gives an impressively precise result in terms of the mean that is close to the real\footnote{Real in terms of: "This is the value that the distribution is based on", not as in "The real \pion lifetime." The real lifetime is unknown and for calculating the distribution a result of a measurement was used.} value. Also, the uncertainties on the measurement are similar to the standard deviation, which means that the uncertainties get calculated correctly. This is also seen in figure \ref{fig:smeared_pull_0} which depicts the pull.
+
+\begin{figure}[h]
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\DoublePlotwidth\textwidth]{images/4b_hist_0_likelihood.pdf}
+%   \caption{}
+\end{subfigure}
+
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\DoublePlotwidth\textwidth]{images/4b_hist_0_squares.pdf}
+%   \caption{}
+\end{subfigure}
+\caption{Results of 1000 different sets of simulated and fitted data. Here the data was smeared with 0.01 time the \pion Mean lifetime.}
+\label{fig:results_smeared_0}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\DoublePlotwidth\textwidth]{images/4b_pull_0_likelihood.pdf}
+    \caption{The Pull of the result of the MLM from figure \ref{fig:results_smeared_0}. The pull shows how good the \pion lifetime fit is, because the fitted normal distribution is very similar to the standard normal distribution.}
+    \label{fig:smeared_pull_0}
+\end{figure}
+
+\FloatBarrier
+\subsection{Smeared with 0.1 times the \texorpdfstring{\pion}{pion} Mean lifetime}
+
+Also, with the bigger smearing the MLM gives better results, this is shown in figure \ref{fig:results_smeared_1}. In comparison to the less smeared results, the differences between uncertainties and standard deviations got bigger and the bias, the difference between the mean and the real value, also got bigger. Notably with the MLM, both means lie within the calculated uncertainties, which is not the case with the \pion lifetime from the LSM.
+
+\begin{figure}[h]
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\DoublePlotwidth\textwidth]{images/4b_hist_1_likelihood.pdf}
+%   \caption{}
+\end{subfigure}
+
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\DoublePlotwidth\textwidth]{images/4b_hist_1_squares.pdf}
+%   \caption{}
+\end{subfigure}
+\caption{Results of 1000 different sets of simulated and fitted data. Here the data was smeared with 0.1 time the \pion Mean lifetime.}
+\label{fig:results_smeared_1}
+\end{figure}
+
+\FloatBarrier
+\subsection{Smeared with 1 times the \texorpdfstring{\pion}{pion} Mean lifetime}
+
+If the smearing gets to big we begin to see some problems with the MLM. The problem is that the fitting does not converge, and it just returns the initial guess. The possibility stands that with further tweaking of the parameters that get fed into the \lstinline{minimize} function, it will converge, but the initial guess is already close to the real values and there parameter are also bounded, so they can not wander to far away. If the setup of the fitting requires that the result is already known beforehand, the fitting itself becomes obsolete. In turn the SLM still gives results. The \muon lifetime is even close to the real value as with the more smeared data and the \pion lifetime gives a result. There is a significant bias to the \pion lifetime and the uncertainties get strongly underestimated, when they are compared to the standard deviation, but there is a result in the correct magnitude.
+
+The situation with the MLM not converging could also be helped by changing the minimize-algorithm completely. In SciPy itself there is also the \lstinline{dual_annealing} option or even a full custom minimizer could be written like based for example on a Markov-Chain. This route would need more time and resources, but could be worth it, if the resulting algorithm would be implemented in a larger scale or even just multiple times.
+
+\begin{figure}[h]
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\DoublePlotwidth\textwidth]{images/4b_hist_2_likelihood.pdf}
+%   \caption{}
+\end{subfigure}
+
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\DoublePlotwidth\textwidth]{images/4b_hist_2_squares.pdf}
+%   \caption{}
+\end{subfigure}
+\caption{Results of 1000 different sets of simulated and fitted data. Here the data was smeared with 1 time the \pion Mean lifetime. The MLM does not converge properly and therefore won't give usable results.}
+\label{fig:results_smeared_2}
+\end{figure}
+
+\begin{figure}[h]
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\Plotwidth\textwidth]{example-image-duck}
+  \caption{1a}
+\end{subfigure}
+
+\begin{subfigure}{\textwidth}
+  \centering
+  \includegraphics[width=\Plotwidth\textwidth]{example-image-duck}
+  \caption{1b}
+\end{subfigure}
+\caption{plots of....}
+\label{fig:fig}
+\end{figure}
 
 \chapter{Discussion}
 % interpretation of the results
