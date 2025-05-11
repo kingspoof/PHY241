@@ -218,17 +218,36 @@ To check if the estimations as well as the uncertainties are correct, the pull w
 \section{Comparison of the estimations and evaluation of the pull}
 Using the two different methods, the lifetimes of the \pion and \muon were estimated. The results are shown in table \ref{tab:results}.
 
+\subsection{Results of the estimations}
+
 \begin{table}[H]
   \begin{tabular}{l|ccc}
                 & true value & binned-maximum-likelihood method & least-squares method \\ \hline
-  muon lifetime & $2.1969811(22)*10^{-6}\si{s}$ & $2.21(2)*10^{-6}\si{s}$ & $2.21(2)*10^{-6}\si{s}$ \\
-  pion lifetime & $2.6033(5)*10^{-8}\si{s}$ & $2.56(25)*10^{-8}\si{s}$ & $3.84(19)*10^{-8}\si{s}$                    
+  muon lifetime & $2.1969811(22)*10^{-6}\si{s}$ & $2.184(15)*10^{-6}\si{s}$ & $2.207(15)*10^{-6}\si{s}$ \\
+  pion lifetime & $2.6033(5)*10^{-8}\si{s}$ & $2.581(246)*10^{-8}\si{s}$ & $3.836(186)*10^{-8}\si{s}$                    
   \end{tabular}
   \caption{Results of the estimations of the lifetimes using both the binned-maximum-likelihood as well as the least-squares method. The true values are given by \cite{ParticleDataGroup:2024cfk}.}
   \label{tab:results}
 \end{table}
 
+As can be seen in table \ref{tab:results}, the binned maximum likelihood method results in better values, which are closer to the true values. Although the least squares method is faster, it does not give a good result for the estimation of the \pion lifetime, as the value is way off even when taking the uncertainties into account.
 
+\subsection{Results of the pull} \footnote{Uncertainties are represented in the following way: $a(b)$ which is to be understood as $a \pm b$. E.g: $1.23(50)*10^-5$ corresponds to $1.23*10^{-5} \pm 0.50 * 10^{-5}$}
+Using the pull, the results of the estimations can be evaluated. For any bias as well as the accuracy of the uncertainties as well. The results of the pull as shown in figure \ref{fig:pull_likelihood_method} and \ref{fig:pull_least_squares_method} is summarized in table \ref{tab:pull_results}.
+
+\begin{table}[H]
+  \begin{tabular}{lll}
+                                        & bined-maximum-likelihood method & least-squares method \\ \hline
+  \multicolumn{1}{l|}{Muon (mean, std)} & $\mu = 0.84$, $\sigma = 1.54 $             & $\mu = -0.67$, $\sigma = 2.02$  \\
+  \multicolumn{1}{l|}{Pion (mean, std)} & $\mu = 0.163$, $\sigma = 1.04$            & $\mu = -6.62$, $\sigma = 2.79$ 
+  \end{tabular}
+  \caption{Comparison of the pull for the two methods}
+  \label{tab:pull_results}
+\end{table}
+
+As clearly visible in table \ref{tab:pull_results}, the binned maximum likelihood method produces better estimations, as the mean of the pull for both the \muon and \pion lifetimes are closer to 0 and the standard deviation beeing closer to 1. The least squares method on the other hand produces a okey value for the estimation of the \muon lifetime, but a very bad one for the \pion lifetime. The mean of $\mu = -6.62$ indicates a very strong bias in the estimation and the standard deviation of $\sigma = 2.79$ indicates a very strong miscalculation in the uncertainties. 
+
+\newpage
 \section{A bit more realistic simulation}
 
 In section \ref{sec:realistic_simulation} the generated data got more realistic with differently strong smearing.
