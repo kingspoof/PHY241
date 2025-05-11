@@ -127,26 +127,15 @@ The goal of the first simulation is to simulate the decay of \pion and \muon wit
 \end{itemize}
 
 \section{A bit more realistic simulation} \label{sec:realistic_simulation}
-The second simulation will build on the first one, but will include the finite time resultion of the apparatus. The goal is to see how this affects the results of the fit. The simulation will take the following steps:
-
-\begin{itemize}
-  \item Generation of \num{10000} decay times using equation \ref{eq:decay_chain_equation} using the know values of the lifetimes. A "smear" will be done on each decay time with a random offset drawn from a gaussian distribution with a mean of $\mu = 0$ and a standard deviation $\sigma_t$. This will be done for the following values of $\sigma_t = \frac{1}{100}, \frac{1}{10}, 1 * \tau$
-  \item Fitting of the three "smeard" time specta with the original function from section \ref{sec:simple_simulation}. 
-  \item Lastly, the quality of the fit and the results of the parameters will be judged.
-\end{itemize}
-
-
-
 In section \ref{sec:simple_simulation}, the distribution of points were directly generated from the distribution \ref{eq:decay_chain_equation}. This isn't realistic, since the measurements itself aren't precise and have some noise to them. To implement this into the simulation, all simulated decay times got "smeared" by a random value drawn from a normal distribution. The standard deviation of this distribution was set to three different values 0.01, 0.1, 1 times the \pion Mean lifetime. The resulting histogram can be seen in figure \ref{fig:smeared_hist}.
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\Plotwidth\textwidth]{images/smeared_decay_histogram_150bins.pdf}
-    \caption{Histogram of smeared decay times. Visually, the distribution looks the same as the not smeared one in Figure \textcolor{red}{insert figure number}}
-    \label{fig:smeared_hist}
-\end{figure}
+This more accurate simulation will be done in the following steps:
+\begin{itemize}
+  \item Generation of \num{10000} decay times using equation \ref{eq:decay_chain_equation} using the know values of the lifetimes. A "smear" will be done on each decay time with a random offset drawn from a gaussian distribution with a mean of $\mu = 0$ and a standard deviation $\sigma_t$. This will be done for the following values of $\sigma_t = \frac{1}{100}, \frac{1}{10}, 1 * \tau$
+  \item The now more realistic data is now piped through the same algorithms as in section \ref{sec:simple_simulation}. Here both the maximum binned likelihood method as well as the least squares method are used.
+  \item The results of the more accurate simulation can then be compared to see if and how the smearing influences the fitting of the lifetimes.
+\end{itemize}
 
-This now more realistic data is now piped through the same algorithms as in section \ref{sec:simple_simulation}. These results can be compared to see if and how the smearing influences the fitting of the lifetimes. For fitting methods both, maximize-likelihood-method (MLM) and least-squares-method (LSM), got used.  
 
 \chapter{Results}
 % present key results (plots, tables, values)
@@ -177,19 +166,16 @@ The random points generated are shown in figure \ref{fig:histogram} in form of a
 \end{figure}
 
 \subsection{Estimation of the lifetimes}
-Next a binned-maximum-likelihood was performed on the histogram. For this the likelihood was calculated according to equation \ref{eq:likelihood} and minimized using the combination of scipy's minimization function as well as a custim markov-chain-monte-carlo minimizer. Although this method worked, it presented with multiple problems: The entire estimation process took a long time, as the mcmc-method required to run for some \num{10000} iterations to get a good estimate. Furthermore it presented with a bias on the lifetime of the \muon, as can be seen in figure \ref{fig:pull_likelihood_method}. 
+Next a binned-maximum-likelihood was performed on the histogram. For this the likelihood was calculated according to equation \ref{eq:likelihood} and minimized using the combination of scipy's minimization function as well as a custim markov-chain-monte-carlo minimizer. Although this method worked, it presented with multiple problems: The entire estimation process took a long time, as the mcmc-method required to run for some \num{10000} iterations to get a good estimate. The results of the estimation can be seen in figure \ref{fig:likelihood_results}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\Plotwidth\textwidth]{images/estimators_pull_likelihood.pdf}
-    \caption{The pull of the estimated lifetimes using the binned maximum likelihood method.}
-    \label{fig:pull_likelihood_method}
+    \includegraphics[width=\Plotwidth\textwidth]{images/estimators_hist_likelihood.pdf}
+    \caption{Estimation of the lifetimes using the binned maximum likelihood method}
+    \label{fig:likelihood_results}
 \end{figure}
 
-To improve the estimation, the least squared method was also considered. Using the same formula and data, it returned better estimations, as can be seen in figure \ref{fig:comparison_estimators}. The least squares method was implemented using the \lstinline|curve_fit| function from the scipy package and was also done on the bins. 
-
-
-%Next we fitted back on the generated histogram the distribution, getting values for the lifetimes and corresponding uncertainties. The fitting was supposed to be done via a maximum likelihood fit, but as can be seen in figure \ref{fig:comparison_estimators}, the least squares method gives better results than the maximum likelihood fit. In figure \ref{fig:comparison_estimators} the maximum likelihood fit is implemented with the SciPy \lstinline|minimize| function, the least squares fit is done with the SciPy \lstinline|curve_fit| function and the full is a stack of fitters from \lstinline|dual_annealing| over a local \lstinline|minimize| to a custom markov-chain minimizer.
+To improve the efficiency of the estimation, the least squared method was also considered. Using the same data, it returned better estimations for the lower end of the decay time spectrum as can be seen in equation \ref{fig:comparison_estimators}. The least squares method was implemented using the \lstinline|curve_fit| function from the scipy package. The results of the estimation can be seen in figure \ref{fig:least_squares_results}.
 
 \begin{figure}[H]
     \centering
@@ -198,7 +184,13 @@ To improve the estimation, the least squared method was also considered. Using t
     \label{fig:comparison_estimators}
 \end{figure}
 
-As the least squared method returns better estimations for the lifetimes, it will also be used for the second simulation as an extention to the binned maximum likelihood method.
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\Plotwidth\textwidth]{images/estimators_hist_least_squares.pdf}
+  \caption{Estimation of the lifetimes using the binned maximum likelihood method}
+  \label{fig:least_squares_results}
+\end{figure}
+
 
 \subsection{Uncertainties of the estimators}
 For the estimation of the uncertainties, two different methods were used. 
@@ -207,22 +199,30 @@ For the estimation of the uncertainties, two different methods were used.
     \item For the least squared method, the uncertainties were calculated using the covariance matrix, which is returned as part of the \lstinline{minimization_results} object. The uncertainties are given by the root of half of the diagonal elements of the covariance matrix.
 \end{itemize}
 
-To check, if the uncertainties were correct, the pull was calculated for each of the simulations according to equation \ref{eq:pull}. This resulted in the following pull distributions, which can be seein in figure \ref{fig:pull_likelihood_method} for the binned maximum likelihood and \ref{fig:pull_least_squares_method} for the least squares method. 
+To check if the estimations as well as the uncertainties are correct, the pull was calculated using equation \ref{eq:pull}. According to the definition, the pull should be a normal distribution with a mean $\mu$ of 0 and a standard deviation $\sigma = 1$. The results of the pull can be seen in figure \ref{fig:pull_likelihood_method} for the binned maximum likelihood method and in figure \ref{fig:pull_least_squares_method} for the least squares method. 
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\Plotwidth\textwidth]{images/comparison_estimators.pdf}
+  \includegraphics[width=\Plotwidth\textwidth]{images/estimators_pull_likelihood.pdf}
+  \caption{Pull of the estimations using the binned maximum likelihood method.}
+  \label{fig:pull_likelihood_method}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\Plotwidth\textwidth]{images/estimators_pull_least_squares.pdf}
+  \caption{Pull of the estimations using the least squares method.}
   \label{fig:pull_least_squares_method}
 \end{figure}
 
-\section{Comparison of the estimations}
+\section{Comparison of the estimations and evaluation of the pull}
 Using the two different methods, the lifetimes of the \pion and \muon were estimated. The results are shown in table \ref{tab:results}.
 
 \begin{table}[H]
   \begin{tabular}{l|ccc}
                 & true value & binned-maximum-likelihood method & least-squares method \\ \hline
-  muon lifetime &            &                                  &                      \\
-  pion lifetime &            &                                  &                     
+  muon lifetime & $2.1969811(22)*10^{-6}\si{s}$ & $2.21(2)*10^{-6}\si{s}$ & $2.21(2)*10^{-6}\si{s}$ \\
+  pion lifetime & $2.6033(5)*10^{-8}\si{s}$ & $2.56(25)*10^{-8}\si{s}$ & $3.84(19)*10^{-8}\si{s}$                    
   \end{tabular}
   \caption{Results of the estimations of the lifetimes using both the binned-maximum-likelihood as well as the least-squares method. The true values are given by \cite{ParticleDataGroup:2024cfk}.}
   \label{tab:results}
