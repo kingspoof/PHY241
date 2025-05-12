@@ -155,18 +155,18 @@ To generate the \num{10000} decay times, equation \ref{eq:decay_chain_equation} 
 The decay times are generated using the accept-reject method. For this, a random point on the domain of the distribution is generated (t, y). If the generated point is below the distribution, it is accepted, if not, it is rejected. This is done until the target number of points is reached. 
 The decay time $t$ is generated using a uniform distribution between 0 and \qty{1}{\s}. The count $y$ is also drawn from a uniform distribution between \qty{0} and the maximum value of the target distribution $max(N(t))$
 
-The random points generated are shown in figure \ref{fig:histogram} in form of a histogram. The overlaid distribution is given by equation \ref{eq:decay_chain_equation} using the know values.
+The random points generated are shown in figure \ref{fig:histogram} in form of a histogram. The overlaid distribution is given by equation \ref{eq:decay_chain_equation} using the known lifetimes.
 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\Plotwidth\textwidth]{images/simulated_decay_histogram.pdf}
+    \includegraphics[width=\Plotwidth\textwidth]{images/simulated_decay_histogram_150bins.pdf}
     \caption{The histogram generated using accept-reject method.}
     \label{fig:histogram}
 \end{figure}
 
 \subsection{Estimation of the lifetimes}
-Next a binned-maximum-likelihood was performed on the histogram. For this the likelihood was calculated according to equation \ref{eq:likelihood} and minimized using the combination of scipy's minimization function as well as a custim markov-chain-monte-carlo minimizer. Although this method worked, it presented with multiple problems: The entire estimation process took a long time, as the mcmc-method required to run for some \num{10000} iterations to get a good estimate. The results of the estimation can be seen in figure \ref{fig:likelihood_results}.
+Next a binned-maximum-likelihood fit was performed on the histogram. For this the likelihood was calculated according to equation \ref{eq:likelihood} and minimized using the combination of scipy's minimization function as well as a custim markov-chain-monte-carlo minimizer. Although this method worked, it presented with multiple problems: The entire estimation process took a long time, as the mcmc-method required to run for some \num{10000} iterations to get a good estimate. The results of the estimation can be seen in figure \ref{fig:likelihood_results}.
 
 \begin{figure}[H]
     \centering
@@ -175,7 +175,7 @@ Next a binned-maximum-likelihood was performed on the histogram. For this the li
     \label{fig:likelihood_results}
 \end{figure}
 
-To improve the efficiency of the estimation, the least squared method was also considered. Using the same data, it returned better estimations for the lower end of the decay time spectrum as can be seen in equation \ref{fig:comparison_estimators}. The least squares method was implemented using the \lstinline|curve_fit| function from the scipy package. The results of the estimation can be seen in figure \ref{fig:least_squares_results}.
+To improve the efficiency of the estimation, the least squared method was also considered. Using the same data, it returned better estimations for the lower end of the decay time spectrum as can be seen in equation \ref{fig:comparison_estimators}. The least squares method was implemented using the \lstinline{curve_fit} function from the scipy package. The results of the estimation can be seen in figure \ref{fig:least_squares_results}.
 
 \begin{figure}[H]
     \centering
@@ -220,29 +220,52 @@ Using the two different methods, the lifetimes of the \pion and \muon were estim
 
 \subsection{Results of the estimations}
 
-\begin{table}[H]
-  \begin{tabular}{l|ccc}
-                & true value & binned-maximum-likelihood method & least-squares method \\ \hline
-  muon lifetime & $2.1969811(22)*10^{-6}\si{s}$ & $2.184(15)*10^{-6}\si{s}$ & $2.207(15)*10^{-6}\si{s}$ \\
-  pion lifetime & $2.6033(5)*10^{-8}\si{s}$ & $2.581(246)*10^{-8}\si{s}$ & $3.836(186)*10^{-8}\si{s}$                    
-  \end{tabular}
-  \caption{Results of the estimations of the lifetimes using both the binned-maximum-likelihood as well as the least-squares method. The true values are given by \cite{ParticleDataGroup:2024cfk}.}
-  \label{tab:results}
-\end{table}
-
 As can be seen in table \ref{tab:results}, the binned maximum likelihood method results in better values, which are closer to the true values. Although the least squares method is faster, it does not give a good result for the estimation of the \pion lifetime, as the value is way off even when taking the uncertainties into account.
 
-\subsection{Results of the pull} \footnote{Uncertainties are represented in the following way: $a(b)$ which is to be understood as $a \pm b$. E.g: $1.23(50)*10^-5$ corresponds to $1.23*10^{-5} \pm 0.50 * 10^{-5}$}
-Using the pull, the results of the estimations can be evaluated. For any bias as well as the accuracy of the uncertainties as well. The results of the pull as shown in figure \ref{fig:pull_likelihood_method} and \ref{fig:pull_least_squares_method} is summarized in table \ref{tab:pull_results}.
+% \begin{table}[H]
+%   \begin{tabular}{l|ccc}
+%                 & true value & binned-maximum-likelihood method & least-squares method \\ \hline
+%   muon lifetime & $2.1969811(22)*10^{-6}\si{s}$ & $2.184(15)*10^{-6}\si{s}$ & $2.207(15)*10^{-6}\si{s}$ \\
+%   pion lifetime & $2.6033(5)*10^{-8}\si{s}$ & $2.581(246)*10^{-8}\si{s}$ & $3.836(186)*10^{-8}\si{s}$                    
+%   \end{tabular}
+%   \caption{Results of the estimations of the lifetimes using both the binned-maximum-likelihood as well as the least-squares method. The true values are given by \cite{ParticleDataGroup:2024cfk}.}
+%   \label{tab:results}
+% \end{table}
 
 \begin{table}[H]
-  \begin{tabular}{lll}
-                                        & bined-maximum-likelihood method & least-squares method \\ \hline
-  \multicolumn{1}{l|}{Muon (mean, std)} & $\mu = 0.84$, $\sigma = 1.54 $             & $\mu = -0.67$, $\sigma = 2.02$  \\
-  \multicolumn{1}{l|}{Pion (mean, std)} & $\mu = 0.163$, $\sigma = 1.04$            & $\mu = -6.62$, $\sigma = 2.79$ 
+\centering
+  \caption{Results of the estimations of the lifetimes using both the binned-maximum-likelihood as well as the least-squares method. The true values are given by the particle data group.\cite{ParticleDataGroup:2024cfk}.}
+  \label{tab:results}
+  \begin{tabular}{l|ccc}
+                & true value & MLM & LSM \\ \hline
+  muon lifetime & \qty{2.1969811(0.0000022)e-6}{\s} & \qty{2.184(0.015)e-6}{\s} & \qty{2.207(0.015)e-6}{\s} \\
+  pion lifetime & \qty{2.6033(0.0005)e-8}{\s}       & \qty{2.581(0.246)e-8}{\s} & \qty{3.836(0.186)e-8}{\s}                    
   \end{tabular}
+\end{table}
+
+\subsection{Results of the pull} 
+
+Using the pull, the results of the estimations can be evaluated. For any bias as well as the accuracy of the uncertainties as well. The results of the pull as shown in figure \ref{fig:pull_likelihood_method} and \ref{fig:pull_least_squares_method} is summarized in table \ref{tab:pull_results}\footnote{Uncertainties are represented in the following way: $a(b)$ which is to be understood as $a \pm b$. E.g: $1.23(50)*10^-5$ corresponds to $1.23*10^{-5} \pm 0.50 * 10^{-5}$}.
+
+% \begin{table}[H]
+%   \begin{tabular}{lll}
+%                                         & bined-maximum-likelihood method & least-squares method \\ \hline
+%   \multicolumn{1}{l|}{Muon (mean, std)} & $\mu = 0.84$, $\sigma = 1.54 $             & $\mu = -0.67$, $\sigma = 2.02$  \\
+%   \multicolumn{1}{l|}{Pion (mean, std)} & $\mu = 0.163$, $\sigma = 1.04$            & $\mu = -6.62$, $\sigma = 2.79$ 
+%   \end{tabular}
+%   \caption{Comparison of the pull for the two methods}
+%   \label{tab:pull_results}
+% \end{table}
+
+\begin{table}[H]
+\centering
   \caption{Comparison of the pull for the two methods}
   \label{tab:pull_results}
+  \begin{tabular}{l|ll}
+                   & MLM                                & LSM \\ \hline
+  Muon (mean, std) & $\mu = 0.84$, $\sigma = 1.54 $     & $\mu = -0.67$, $\sigma = 2.02$  \\
+  Pion (mean, std) & $\mu = 0.163$, $\sigma = 1.04$     & $\mu = -6.62$, $\sigma = 2.79$ 
+  \end{tabular}
 \end{table}
 
 As clearly visible in table \ref{tab:pull_results}, the binned maximum likelihood method produces better estimations, as the mean of the pull for both the \muon and \pion lifetimes are closer to 0 and the standard deviation beeing closer to 1. The least squares method on the other hand produces a okey value for the estimation of the \muon lifetime, but a very bad one for the \pion lifetime. The mean of $\mu = -6.62$ indicates a very strong bias in the estimation and the standard deviation of $\sigma = 2.79$ indicates a very strong miscalculation in the uncertainties. 
