@@ -165,12 +165,12 @@ To generate the \num{10000} decay times, equation \ref{eq:decay_chain_equation} 
 The decay times are generated using the accept-reject method. For this, a random point on the domain of the distribution is generated (t, y). If the generated point is below the distribution, it is accepted, if not, it is rejected. This is done until the target number of points is reached. 
 The decay time $t$ is generated using a uniform distribution between 0 and \qty{1}{\s}. The count $y$ is also drawn from a uniform distribution between \qty{0} and the maximum value of the target distribution $max(N(t))$
 
-The random points generated are shown in figure \ref{fig:histogram} in form of a histogram. The overlaid distribution is given by equation \ref{eq:decay_chain_equation} using the know values.
+The random points generated are shown in figure \ref{fig:histogram} in form of a histogram. The overlaid distribution is given by equation \ref{eq:decay_chain_equation} using the known lifetimes.
 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\Plotwidth\textwidth]{images/simulated_decay_histogram.pdf}
+    \includegraphics[width=\Plotwidth\textwidth]{images/simulated_decay_histogram_150bins.pdf}
     \caption{The histogram generated using accept-reject method.}
     \label{fig:histogram}
 \end{figure}
@@ -240,22 +240,55 @@ Using the two different methods, the lifetimes of the \pion and \muon were estim
   \label{tab:results}
 \end{table}
 
-As can be seen in table \ref{tab:results}, the MLM results in better values, which are closer to the true values. Although the LSM is faster, it does not give a good result for the estimation of the \pion lifetime, as the value is way off even when taking the uncertainties into account.
 
-\subsection{Results of the pull} \footnote{Uncertainties are represented in the following way: $a(b)$ which is to be understood as $a \pm b$. E.g: $1.23(50)*10^-5$ corresponds to $1.23*10^{-5} \pm 0.50 * 10^{-5}$}
-Using the pull, the results of the estimations can be evaluated. For any bias as well as the accuracy of the uncertainties as well. The results of the pull as shown in figure \ref{fig:pull_likelihood_method} and \ref{fig:pull_least_squares_method} is summarized in table \ref{tab:pull_results}.
+%% -> This can be now found in the conclusion
+%As can be seen in table \ref{tab:results}, the MLM results in better values, which are closer to the true values. Although the LSM is faster, it does not give a good result for the estimation of the \pion lifetime, as the value is way off even when taking the uncertainties into account.
+
+% \begin{table}[H]
+%   \begin{tabular}{l|ccc}
+%                 & true value & binned-maximum-likelihood method & least-squares method \\ \hline
+%   muon lifetime & $2.1969811(22)*10^{-6}\si{s}$ & $2.184(15)*10^{-6}\si{s}$ & $2.207(15)*10^{-6}\si{s}$ \\
+%   pion lifetime & $2.6033(5)*10^{-8}\si{s}$ & $2.581(246)*10^{-8}\si{s}$ & $3.836(186)*10^{-8}\si{s}$                    
+%   \end{tabular}
+%   \caption{Results of the estimations of the lifetimes using both the binned-maximum-likelihood as well as the least-squares method. The true values are given by \cite{ParticleDataGroup:2024cfk}.}
+%   \label{tab:results}
+% \end{table}
+
+%\begin{table}[H]
+  %\begin{tabular}{lll}
+  %                                      & MLM & LSM \\ \hline
+  %\multicolumn{1}{l|}{Muon (mean, std)} & $\mu = 0.84$, $\sigma = 1.54 $             & $\mu = -0.67$, $\sigma %= 2.02$  \\
+  %\multicolumn{1}{l|}{Pion (mean, std)} & $\mu = 0.163$, $\sigma = 1.04$            & $\mu = -6.62$, $\sigma% = 2.79$ 
+%  \end{tabular}
+%\end{table}
+
+\subsection{Results of the pull} 
+
+Using the pull, the results of the estimations can be evaluated. For any bias as well as the accuracy of the uncertainties as well. The results of the pull as shown in figure \ref{fig:pull_likelihood_method} and \ref{fig:pull_least_squares_method} are summarized in table \ref{tab:pull_results}\footnote{Uncertainties are represented in the following way: $a(b)$ which is to be understood as $a \pm b$. E.g: $1.23(50)*10^-5$ corresponds to $1.23*10^{-5} \pm 0.50 * 10^{-5}$}.
+
+% \begin{table}[H]
+%   \begin{tabular}{lll}
+%                                         & bined-maximum-likelihood method & least-squares method \\ \hline
+%   \multicolumn{1}{l|}{Muon (mean, std)} & $\mu = 0.84$, $\sigma = 1.54 $             & $\mu = -0.67$, $\sigma = 2.02$  \\
+%   \multicolumn{1}{l|}{Pion (mean, std)} & $\mu = 0.163$, $\sigma = 1.04$            & $\mu = -6.62$, $\sigma = 2.79$ 
+%   \end{tabular}
+%   \caption{Comparison of the pull for the two methods}
+%   \label{tab:pull_results}
+% \end{table}
 
 \begin{table}[H]
-  \begin{tabular}{lll}
-                                        & MLM & LSM \\ \hline
-  \multicolumn{1}{l|}{Muon (mean, std)} & $\mu = 0.84$, $\sigma = 1.54 $             & $\mu = -0.67$, $\sigma = 2.02$  \\
-  \multicolumn{1}{l|}{Pion (mean, std)} & $\mu = 0.163$, $\sigma = 1.04$            & $\mu = -6.62$, $\sigma = 2.79$ 
-  \end{tabular}
+\centering
   \caption{Comparison of the pull for the two methods}
   \label{tab:pull_results}
+  \begin{tabular}{l|ll}
+                   & MLM                                & LSM \\ \hline
+  Muon (mean, std) & $\mu = 0.84$, $\sigma = 1.54 $     & $\mu = -0.67$, $\sigma = 2.02$  \\
+  Pion (mean, std) & $\mu = 0.163$, $\sigma = 1.04$     & $\mu = -6.62$, $\sigma = 2.79$ 
+  \end{tabular}
 \end{table}
 
-As clearly visible in table \ref{tab:pull_results}, the MLM produces better estimations, as the mean of the pull for both the \muon and \pion lifetimes are closer to 0 and the standard deviation beeing closer to 1. The LSM on the other hand produces an good value for the estimation of the \muon lifetime, but a very bad one for the \pion lifetime. The mean of $\mu = -6.62$ indicates a very strong bias in the estimation and the standard deviation of $\sigma = 2.79$ indicates a very strong miscalculation in the uncertainties. 
+% -> this can also be found in the conclusion
+%As clearly visible in table \ref{tab:pull_results}, the MLM produces better estimations, as the mean of the pull for both the \muon and \pion lifetimes are closer to 0 and the standard deviation beeing closer to 1. The LSM on the other hand produces an good value for the estimation of the \muon lifetime, but a very bad one for the \pion lifetime. The mean of $\mu = -6.62$ indicates a very strong bias in the estimation and the standard deviation of $\sigma = 2.79$ indicates a very strong miscalculation in the uncertainties. 
 
 \newpage
 \section{A bit more realistic simulation}
@@ -292,7 +325,7 @@ In figure \ref{fig:results_smeared_0} is clear that the MLM yields better result
 \FloatBarrier
 \subsection{Smeared with 0.1 times the \texorpdfstring{\pion}{pion} Mean lifetime}
 
-Also, with the bigger smearing the MLM gives better results, this is shown in figure \ref{fig:results_smeared_1}. In comparison to the less smeared results, the differences between uncertainties and standard deviations got bigger and the bias, the difference between the mean and the real value, also got bigger. Notably with the MLM, both means lie within the calculated uncertainties, which is not the case with the \pion lifetime from the LSM.
+Also, with bigger smearing the MLM gives better results, this is shown in figure \ref{fig:results_smeared_1}. In comparison to the less smeared results, the differences between uncertainties and standard deviations got bigger and the bias, the difference between the mean and the real value, also got bigger. In particular with the MLM, both means lie within the calculated uncertainties, which is not the case with the \pion lifetime from the LSM.
 
 \begin{figure}[h]
 \begin{subfigure}{\textwidth}
@@ -313,7 +346,7 @@ Also, with the bigger smearing the MLM gives better results, this is shown in fi
 \FloatBarrier
 \subsection{Smeared with 1 times the \texorpdfstring{\pion}{pion} Mean lifetime}
 
-If the smearing gets to big we begin to see some problems with the MLM. The problem is that the fitting does not converge, and it just returns the initial guess. The possibility stands that with further tweaking of the parameters that get fed into the \lstinline{minimize} function, it will converge, but the initial guess is already close to the real values and there parameter are also bounded, so they can not wander to far away. If the setup of the fitting requires that the result is already known beforehand, the fitting itself becomes obsolete. In turn the SLM still gives results. The \muon lifetime is even close to the real value as with the more smeared data and the \pion lifetime gives a result. There is a significant bias to the \pion lifetime and the uncertainties get strongly underestimated, when they are compared to the standard deviation, but there is a result in the correct magnitude.
+If the smearing gets to big, we begin to see some problems with the MLM. The problem is that the fitting does not converge, and it just returns the initial guess. The possibility stands that with further tweaking of the parameters that get fed into the \lstinline{minimize} function, it will converge, but the initial guess is already close to the real values and there parameter are also bounded, so they can not wander to far away. If the setup of the fitting requires that the result is already known beforehand, the fitting itself becomes obsolete. In turn the SLM still gives results. The \muon lifetime is even close to the real value as with the more smeared data and the \pion lifetime gives a result. There is a significant bias to the \pion lifetime and the uncertainties get strongly underestimated, when they are compared to the standard deviation, but there is a result in the correct magnitude.
 
 The situation with the MLM not converging could also be helped by changing the minimize-algorithm completely. In SciPy itself there is also the \lstinline{dual_annealing} option or even a full custom minimizer could be written like based for example on a Markov-Chain. This route would need more time and resources, but could be worth it, if the resulting algorithm would be implemented in a larger scale or even just multiple times.
 
