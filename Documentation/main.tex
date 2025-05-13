@@ -143,7 +143,7 @@ In section \ref{sec:simple_simulation}, the distribution of points were directly
 
 This more accurate simulation will be done in the following steps:
 \begin{itemize}
-  \item Generation of \num{10000} decay times using equation \ref{eq:decay_chain_equation} using the know values of the lifetimes. A "smear" will be done on each decay time with a random offset drawn from a gaussian distribution with a mean of $\mu = 0$ and a standard deviation $\sigma_t$. This will be done for the following values of $\sigma_t = \frac{1}{100}, \frac{1}{10}, 1 * \tau$
+  \item Generation of \num{10000} decay times using equation \ref{eq:decay_chain_equation} using the know values of the lifetimes. A "smear" will be done on each decay time with a random offset drawn from a gaussian distribution with a mean of $\mu = 0$ and a standard deviation $\sigma_t$. This will be done for the following values of $\sigma_t = \frac{1}{100}, \frac{1}{10}, 1 \cdot \tau_\pi$
   \item The now more realistic data is now piped through the same algorithms as in section \ref{sec:simple_simulation}. Here both the MLM as well as the LSM are used.
   \item The results of the more accurate simulation can then be compared to see if and how the smearing influences the fitting of the lifetimes.
 \end{itemize}
@@ -234,15 +234,15 @@ Using the two different methods, the lifetimes of the \pion and \muon were estim
 \subsection{Results of the estimations}
 
 \begin{table}[H]
-  \begin{tabular}{l|ccc}
-                & true value & MLM & LSM \\ \hline
-  muon lifetime & $2.1969811(22)*10^{-6}\si{s}$ & $2.184(15)*10^{-6}\si{s}$ & $2.207(15)*10^{-6}\si{s}$ \\
-  pion lifetime & $2.6033(5)*10^{-8}\si{s}$ & $2.581(246)*10^{-8}\si{s}$ & $3.836(186)*10^{-8}\si{s}$                    
-  \end{tabular}
-  \caption{Results of the estimations of the lifetimes using both the MLM as well as the LSM. The true values are given by \cite{ParticleDataGroup:2024cfk}.}
+\centering
+  \caption{Results of the estimations of the lifetimes using both the binned-maximum-likelihood as well as the least-squares method. The true values are given by the particle data group\cite{ParticleDataGroup:2024cfk}.}
   \label{tab:results}
+  \begin{tabular}{r|ccc}
+                & true value & MLM & LSM \\ \hline
+  muon lifetime & \qty{2.1969811(0.0000022)e-6}{\s} & \qty{2.184(0.015)e-6}{\s} & \qty{2.207(0.015)e-6}{\s} \\
+  pion lifetime & \qty{2.6033(0.0005)e-8}{\s}       & \qty{2.581(0.246)e-8}{\s} & \qty{3.836(0.186)e-8}{\s}                    
+  \end{tabular}
 \end{table}
-
 
 %% -> This can be now found in the conclusion
 %As can be seen in table \ref{tab:results}, the MLM results in better values, which are closer to the true values. Although the LSM is faster, it does not give a good result for the estimation of the \pion lifetime, as the value is way off even when taking the uncertainties into account.
@@ -283,7 +283,7 @@ Using the pull, the results of the estimations can be evaluated. For any bias as
 \centering
   \caption{Comparison of the pull for the two methods}
   \label{tab:pull_results}
-  \begin{tabular}{l|ll}
+  \begin{tabular}{r|ll}
                    & MLM                                & LSM \\ \hline
   Muon (mean, std) & $\mu = 0.84$, $\sigma = 1.54 $     & $\mu = -0.67$, $\sigma = 2.02$  \\
   Pion (mean, std) & $\mu = 0.163$, $\sigma = 1.04$     & $\mu = -6.62$, $\sigma = 2.79$ 
@@ -393,16 +393,20 @@ The situation with the MLM not converging could also be helped by changing the m
 \caption{Comparison between all results and the reference value.}
 \label{tab:comparison_all}
 \begin{tabular}{r|r|cc}
-                             & method                & muon lifetime & pion lifetime \\ \hline
-reference value              &                 & \qty{2.1969811(0.0000022)e-6}{\s} & \qty{2.6033(0.0005)e-8}{\s} \\\hline
-\multirow{2}{*}{no smearing} & MLM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.581(0.246)e-8}{\s}   \\
-                             & LSM             & \qty{2.207(0.015)e-6}{\s}         & \qty{3.836(0.186)e-8}{\s}  \\\hline
-\multirow{2}{*}{0.01 * tau}  & MLM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.581(0.246)e-8}{\s}   \\
-                             & LSM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.581(0.246)e-8}{\s}   \\\hline
-\multirow{2}{*}{0.1 * tau}   & MLM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.581(0.246)e-8}{\s}   \\
-                             & LSM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.581(0.246)e-8}{\s}   \\\hline
-\multirow{2}{*}{1 * tau}     & MLM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.581(0.246)e-8}{\s}   \\
-                             & LSM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.581(0.246)e-8}{\s}    
+smearing                                         & method                & muon lifetime & pion lifetime \\ \hline
+reference value                                  &                 & \qty{2.1969811(0.0000022)e-6}{\s} & \qty{2.6033(0.0005)e-8}{\s} \\
+\hline
+\multirow{2}{*}{no smearing}                     & MLM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.581(0.246)e-8}{\s}   \\
+                                                 & LSM             & \qty{2.207(0.015)e-6}{\s}         & \qty{3.836(0.186)e-8}{\s}   \\
+\hline
+\multirow{2}{*}{$\frac{1}{100} \cdot \tau_\pi$}  & MLM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.576(0.245)e-8}{\s}   \\
+                                                 & LSM             & \qty{2.207(0.015)e-6}{\s}         & \qty{3.848(0.187)e-8}{\s}   \\
+\hline
+\multirow{2}{*}{$\frac{1}{10} \cdot \tau_\pi$}   & MLM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.524(0.244)e-8}{\s}   \\
+                                                 & LSM             & \qty{2.206(0.015)e-6}{\s}         & \qty{3.907(0.184)e-8}{\s}   \\
+\hline
+\multirow{2}{*}{$1 \cdot \tau_\pi$}              & MLM             & N/A                               & N/A                         \\
+                                                 & LSM             & \qty{2.202(0.018)e-6}{\s}         & \qty{3.254(0.234)e-8}{\s}    
 \end{tabular}
 \end{table}
 
