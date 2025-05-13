@@ -155,7 +155,7 @@ This more accurate simulation will be done in the following steps:
 
 In this chapter, the results of the simulations including their implementations are discussed.
 
-\section{Implementation of the simple simulation}
+\section{Implementation of the simple simulation} \label{sec:simple_simulation_results}
 
 \subsection{Simulation of the decay times}
 To generate the \num{10000} decay times, equation \ref{eq:decay_chain_equation} is used, with the known values of the lifetimes of the \pion and \muon. The known values are given by: \cite{ParticleDataGroup:2024cfk}
@@ -244,6 +244,8 @@ Using the two different methods, the lifetimes of the \pion and \muon were estim
   \end{tabular}
 \end{table}
 
+As shown in Table \ref{tab:results}, the MLM produces values closer to the true lifetimes for both the \pion and \muon. Although the LSM is considerably faster, it fails to provide a good estimate for the \pion lifetime, even when uncertainties are accounted for.
+
 %% -> This can be now found in the conclusion
 %As can be seen in table \ref{tab:results}, the MLM results in better values, which are closer to the true values. Although the LSM is faster, it does not give a good result for the estimation of the \pion lifetime, as the value is way off even when taking the uncertainties into account.
 
@@ -290,11 +292,13 @@ Using the pull, the results of the estimations can be evaluated. For any bias as
   \end{tabular}
 \end{table}
 
+The pull analysis (Table \ref{tab:pull_results}) further suggests that the MLM is the better method for this simulation, as the pulls for both lifetimes are close to the ideal value of 0. The standard deviations of $1.5$ for the \muon and $1$ for the \pion also indicate that the uncertainties are quite accurate. However, it is important to note that there is a slight bias in the \muon estimation, which directly affects the uncertainties and, consequently, the standard deviation of the pull.
+
 % -> this can also be found in the conclusion
 %As clearly visible in table \ref{tab:pull_results}, the MLM produces better estimations, as the mean of the pull for both the \muon and \pion lifetimes are closer to 0 and the standard deviation beeing closer to 1. The LSM on the other hand produces an good value for the estimation of the \muon lifetime, but a very bad one for the \pion lifetime. The mean of $\mu = -6.62$ indicates a very strong bias in the estimation and the standard deviation of $\sigma = 2.79$ indicates a very strong miscalculation in the uncertainties. 
 
 \newpage
-\section{A bit more realistic simulation}
+\section{A bit more realistic simulation} \label{sec:more_realisitic_results}
 
 In section \ref{sec:realistic_simulation} the generated data got more realistic with differently strong smearing.
 
@@ -349,7 +353,7 @@ Also, with bigger smearing the MLM gives better results, this is shown in figure
 \FloatBarrier
 \subsection{Smeared with 1 times the \texorpdfstring{\pion}{pion} Mean lifetime}
 
-If the smearing gets to big, we begin to see some problems with the MLM. The problem is that the fitting does not converge, and it just returns the initial guess. The possibility stands that with further tweaking of the parameters that get fed into the \lstinline{minimize} function, it will converge, but the initial guess is already close to the real values and there parameter are also bounded, so they can not wander to far away. If the setup of the fitting requires that the result is already known beforehand, the fitting itself becomes obsolete. In turn the SLM still gives results. The \muon lifetime is even close to the real value as with the more smeared data and the \pion lifetime gives a result. There is a significant bias to the \pion lifetime and the uncertainties get strongly underestimated, when they are compared to the standard deviation, but there is a result in the correct magnitude.
+If the smearing gets to big, there start be be some problem with the MLM. The problem is that the fitting does not converge, and it just returns the initial guess. The possibility stands that with further tweaking of the parameters that get fed into the \lstinline{minimize} function, it will converge, but the initial guess is already close to the real values and there parameter are also bounded, so they can not wander to far away. If the setup of the fitting requires that the result is already known beforehand, the fitting itself becomes obsolete. In turn the SLM still gives results. The \muon lifetime is even close to the real value as with the more smeared data and the \pion lifetime gives a result. There is a significant bias to the \pion lifetime and the uncertainties get strongly underestimated, when they are compared to the standard deviation, but there is a result in the correct magnitude.
 
 The situation with the MLM not converging could also be helped by changing the minimize-algorithm completely. In SciPy itself there is also the \lstinline{dual_annealing} option or even a full custom minimizer could be written like based for example on a Markov-Chain. This route would need more time and resources, but could be worth it, if the resulting algorithm would be implemented in a larger scale or even just multiple times.
 
@@ -410,15 +414,24 @@ reference value                                  &                 & \qty{2.1969
 \end{tabular}
 \end{table}
 
-\chapter{Discussion}
+%\chapter{Discussion}
+% note that there is already a conclusion like to notes down
 
 \chapter{Conclusion}
 \section{Simple Simulation}
-As shown in Table \ref{tab:results}, the MLM produces values closer to the true lifetimes for both the \pion and \muon. Although the LSM is considerably faster, it fails to provide a good estimate for the \pion lifetime, even when uncertainties are accounted for.
+As discussed in section \ref{simple_simulation_results}, the MLM\footnote{binned-maximum-likelihood method} yielded much better estimations for both lifetime values when compared to LSM\footnote{least-squares method}. 
 
-The pull analysis (Table \ref{tab:pull_results}) further suggests that the MLM is the better method for this simulation, as the pulls for both lifetimes are close to the ideal value of 0. The standard deviations of $1.5$ for the \muon and $1$ for the \pion also indicate that the uncertainties are quite accurate. However, it is important to note that there is a slight bias in the \muon estimation, which directly affects the uncertainties and, consequently, the standard deviation of the pull.
+Using the pull to validate the resutls from the MLM to it self, it becomes clear, that the value for the \pion is close to the true value and the uncertainty is computed correctly. When looking at the pull for the \muon it becomes clear that there is a bias in the estimation which then also affects the accuracy of the uncertainty. 
+
+Although the LSM is faster and more computationaly efficient, it does not yield the desired values. This is stronly visible in the estimation for the \pion as the value is way off even with the uncertainties. 
 
 \section{A bit more Realistic}
+Since the MLM yielded the better estimations in section \ref{sec:simple_simulation_results} it was to be expected, that it would also yield better results in the more accurate simulation, as seen in section \ref{sec:more_realisitic_results}.
+
+The results of the first to smears, which $0.01 * \tau$ and $0.1 * \tau$ are close to what was achieved in the simple simulation. The MLM gives precise results close to the true value, with pull values close to what was achieved in section \ref{sec:simple_simulation_results}. 
+
+For the case where the simulated decay times were smeared with $1 * \tau$, the MLM started to struggle as well. The problem here was, that the fitting did not converge and the algorithm just returned the initial guesses. Since the initial values were chosen quite close to the real values, this can be seen as a valid strategy by the minimization algorithm. Here the only usable values were given by the SLM values. Here the values are suprisingly close to the true values.  
+
 \section{Comparison between the simulations}
 % interpretation of the results
 % compare with theory or expectations
