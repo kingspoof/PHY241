@@ -32,6 +32,8 @@
        basicstyle=\footnotesize\ttfamily,
   }
 
+\usepackage{multirow}
+
 \begin{document}
 
 % Bitte Titlepage noch bearbeiten falls nötig
@@ -102,7 +104,7 @@ The likelihood of a data set is given by the following equation:
 
 To simplify computation as well as numerical stability, the negative log likelihood is used. In the case of the decay times, the nll is given by:
 \begin{equation}
-  \log{nll} = -\sum_{i=1}^{N} c_i * \log{\bar{c_i}} - \bar{c_i} - \log{c_i!}
+  \log{nll} = -\sum_{i=1}^{N} c_i \cdot \log{\bar{c_i}} - \bar{c_i} - \log{c_i!}
   \label{eq:likelihood}
 \end{equation}
 where $c_i$ is the true number of counts in the bin $i$ and $\bar{c_i}$ the expected count.
@@ -180,7 +182,7 @@ Next a binned-maximum-likelihood\footnote{From this point on the abreviation MLM
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\Plotwidth\textwidth]{images/estimators_hist_likelihood.pdf}
+    \includegraphics[width=\DoublePlotwidth\textwidth]{images/estimators_hist_likelihood.pdf}
     \caption{Estimation of the lifetimes using the binned maximum likelihood method}
     \label{fig:likelihood_results}
 \end{figure}
@@ -196,8 +198,9 @@ To improve the efficiency of the estimation, the least squared method\footnote{F
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\Plotwidth\textwidth]{images/estimators_hist_least_squares.pdf}
-  \caption{Estimation of the lifetimes using the MLM}
+  \includegraphics[width=\DoublePlotwidth\textwidth]{images/estimators_hist_least_squares.pdf}
+  \caption{Estimation of the lifetimes using the binned maximum likelihood method}
+
   \label{fig:least_squares_results}
 \end{figure}
 
@@ -213,15 +216,15 @@ To check if the estimations as well as the uncertainties are correct, the pull w
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\Plotwidth\textwidth]{images/estimators_pull_likelihood.pdf}
-  \caption{Pull of the estimations using the MLM.}
+  \includegraphics[width=\DoublePlotwidth\textwidth]{images/estimators_pull_likelihood.pdf}
+  \caption{Pull of the estimations using the binned maximum likelihood method.}
   \label{fig:pull_likelihood_method}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\Plotwidth\textwidth]{images/estimators_pull_least_squares.pdf}
-  \caption{Pull of the estimations using the LSM.}
+  \includegraphics[width=\DoublePlotwidth\textwidth]{images/estimators_pull_least_squares.pdf}
+  \caption{Pull of the estimations using the least squares method.}
   \label{fig:pull_least_squares_method}
 \end{figure}
 
@@ -301,7 +304,7 @@ In section \ref{sec:realistic_simulation} the generated data got more realistic 
 
 \subsection{Smeared with 0.01 times the \texorpdfstring{\pion}{pion} Mean lifetime}
 
-In figure \ref{fig:results_smeared_0} is clear that the MLM yields better results as the LSF. Especially in for the \pion lifetime the MLM gives an impressively precise result in terms of the mean that is close to the real\footnote{Real in terms of: "This is the value that the distribution is based on", not as in "The real \pion lifetime." The real lifetime is unknown and for calculating the distribution a result of a measurement was used.} value. Also, the uncertainties on the measurement are similar to the standard deviation, which means that the uncertainties get calculated correctly. This is also seen in figure \ref{fig:smeared_pull_0} which depicts the pull.
+In figure \ref{fig:results_smeared_0} is clear that the MLM yields better results as the LSF. Especially for the \pion lifetime the MLM gives an impressively precise result in terms of the mean that is close to the real\footnote{Real in terms of: "This is the value that the distribution is based on", not as in "The real \pion lifetime." The real lifetime is unknown and for calculating the distribution a result of a measurement was used.} value. Also, the uncertainties on the measurement are similar to the standard deviation, which means that the uncertainties get calculated correctly. This is also seen in figure \ref{fig:smeared_pull_0} which depicts the pull.
 
 \begin{figure}[h]
 \begin{subfigure}{\textwidth}
@@ -385,6 +388,29 @@ The situation with the MLM not converging could also be helped by changing the m
 \caption{plots of....}
 \label{fig:fig}
 \end{figure}
+
+\FloatBarrier
+\section{Comparison between all results}
+
+\begin{table}[h]
+\centering
+\caption{Comparison between all results and the reference value.}
+\label{tab:comparison_all}
+\begin{tabular}{r|r|cc}
+                             & method                & muon lifetime & pion lifetime \\ \hline
+reference value              &                 & \qty{2.1969811(0.0000022)e-6}{\s} & \qty{2.6033(0.0005)e-8}{\s} \\\hline
+\multirow{2}{*}{no smearing} & MLM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.581(0.246)e-8}{\s}   \\
+                             & LSM             & \qty{2.207(0.015)e-6}{\s}         & \qty{3.836(0.186)e-8}{\s}  \\\hline
+\multirow{2}{*}{0.01 * tau}  & MLM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.581(0.246)e-8}{\s}   \\
+                             & LSM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.581(0.246)e-8}{\s}   \\\hline
+\multirow{2}{*}{0.1 * tau}   & MLM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.581(0.246)e-8}{\s}   \\
+                             & LSM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.581(0.246)e-8}{\s}   \\\hline
+\multirow{2}{*}{1 * tau}     & MLM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.581(0.246)e-8}{\s}   \\
+                             & LSM             & \qty{2.184(0.015)e-6}{\s}         & \qty{2.581(0.246)e-8}{\s}    
+\end{tabular}
+\end{table}
+
+\chapter{Discussion}
 
 \chapter{Conclusion}
 \section{Simple Simulation}
